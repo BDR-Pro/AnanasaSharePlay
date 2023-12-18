@@ -1,6 +1,6 @@
 # ananasaSharePlay
 Website to share play for games with customers.
-![LimeWire AI Studio Asset](https://github.com/BDR-Pro/ananasaSharePlay/assets/91114465/1b0f839f-81e8-4c59-a61b-ccb770dfbc0e)
+![LimeWire AI Studio Asset](https://github.com/BDR-Pro/ananasaSharePlay/assets/91114465/1b0f839f-81e8-4c59-a61b-ccb770dfbc0e){:width="50px"}
 
 ## Table of Contents
 
