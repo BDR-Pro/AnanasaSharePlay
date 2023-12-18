@@ -5,7 +5,6 @@
 
 Website to share play for games with customers.
 
-
 ## Table of Contents
 
 - [Features](#features)
@@ -14,6 +13,7 @@ Website to share play for games with customers.
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
+- [Acknowledgments](#acknowledgments) <!-- Add Acknowledgments Section -->
 
 ## Features
 
@@ -32,10 +32,9 @@ Allow users to rent games for a specified duration. This feature enables users t
 Empower users to sell their own rented games, creating a shareplay marketplace within the community.
 
 - List rented games for sale with a specified price.
-- Provide detail about share screen software
 - Provide details about the rented game, including duration remaining.
 - Allow other users to browse and purchase the rented game.
-- Transfer access to the buyer after successful purchase.
+- Transfer access to the buyer after a successful purchase.
 - Appropriate handling of payments and transactions.
 
 ## Getting Started
@@ -51,7 +50,6 @@ List any software or dependencies that need to be installed.
 1. Step 1
 2. Step 2
 3. ...
-## Getting Started
 
 - **Sign In:**
   - Log in to your account using your credentials.
@@ -87,8 +85,6 @@ List any software or dependencies that need to be installed.
   - Wait for Custom:
     - Whether renting or selling, relax and wait for the transaction to complete.
     - Track your rentals or sales through your user profile.
-
-  
 
 ## Contributing
 
