@@ -51,10 +51,44 @@ List any software or dependencies that need to be installed.
 1. Step 1
 2. Step 2
 3. ...
+## Getting Started
 
-## Usage
+- **Sign In:**
+  - Log in to your account using your credentials.
 
-Provide examples and instructions on how to use your project. Include screenshots or code snippets if helpful.
+- **Choose a Game:**
+  - Browse through our selection of games and choose the one you want to play or explore.
+
+- **Payment:**
+  - Select your preferred payment method and complete the transaction securely.
+
+- **Play:**
+  - Enjoy your chosen game instantly after payment. Dive into the immersive experience right away!
+
+## Rental
+
+- **Rent a Game:**
+  - Explore our rental options.
+  - Choose a game and select the rental duration.
+  - Confirm the rental process to gain temporary access to the game.
+
+## Selling
+
+- **Sell Your Game:**
+  - Ready to share the joy? List your game for sale.
+  - Set a price and provide necessary details about the game.
+  - Wait for potential buyers to discover and purchase your game.
+
+## Share Your ID
+
+- **Share Your Game ID:**
+  - If you're engaging in screen sharing or cooperative gameplay, note down your unique game ID.
+  - Share this ID using our screen-sharing software to connect with friends or fellow gamers.
+  - Wait for Custom:
+    - Whether renting or selling, relax and wait for the transaction to complete.
+    - Track your rentals or sales through your user profile.
+
+  
 
 ## Contributing
 
