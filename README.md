@@ -11,9 +11,10 @@ Website to share play for games with customers.
 - [Getting Started](#getting-started)
 - [Installation](#installation)
 - [Usage](#usage)
+- [UML](#UML)
 - [Contributing](#contributing)
 - [License](#license)
-- [Acknowledgments](#acknowledgments) <!-- Add Acknowledgments Section -->
+- [Acknowledgments](#acknowledgments) 
 
 ## Features
 
@@ -85,6 +86,12 @@ List any software or dependencies that need to be installed.
   - Wait for Custom:
     - Whether renting or selling, relax and wait for the transaction to complete.
     - Track your rentals or sales through your user profile.
+   
+## UML
+
+<img src="https://github.com/BDR-Pro/ananasaSharePlay/assets/91114465/b81c4b2f-3362-441a-ae6c-c2e5e36113d8" alt="UML" width="250"/>
+
+
 
 ## Contributing
 
