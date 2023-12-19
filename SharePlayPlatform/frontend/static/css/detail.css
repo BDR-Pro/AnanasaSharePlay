@@ -1,0 +1,14 @@
+/* Detail.css */
+
+.detail-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .detail-image {
+    max-width: 50%;
+    height: auto;
+    margin: 0 auto;
+  }
+  

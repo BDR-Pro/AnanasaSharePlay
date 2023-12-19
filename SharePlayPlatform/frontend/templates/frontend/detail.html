@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game</title>
+  <!-- Add this line to import the latest Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" integrity="sha384-rGfR7sreX6q1a5F7wfl3l5knfshA1c+Ayo9c8V+XofLgn/6aGzukXzJPpZl+9aPW" crossorigin="anonymous">
+  <!-- Load your custom CSS file -->
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static "css/detail.css" %}">
+</head>
+<body>
+  <div id="main">
+    <!-- Ensure your JavaScript file renders the React component into this div -->
+    <div id="detail"></div>
+  </div>
+
+  <!-- Load jQuery before Bootstrap JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- Load Bootstrap JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"></script>
+  <!-- Load your React JavaScript file -->
+  <script src="{% static "frontend/detail.js" %}"></script>
+</body>
+</html>

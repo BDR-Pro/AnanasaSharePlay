@@ -1,17 +1,19 @@
 # shareplay/models.py
 
 from django.db import models
-
+from django.contrib.auth.models import User
+from django.utils.text import slugify
 class Game(models.Model):
     title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True,default=slugify(title))
+    genre = models.CharField(max_length=255, blank=True, null=True, default='')
     description = models.TextField()
     image = models.ImageField(upload_to='images/')
     owner = models.JSONField(blank=True, null=True)  # JSONField is a dictionary <owner:PricePerHour>
 
-class User(models.Model):
-    username = models.CharField(max_length=255)
-    email = models.EmailField() 
-    nickname = models.CharField(max_length=255)
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE,default=1)
+    avatar = models.ImageField(upload_to='avatar/', default='avatar/default.png')
     games = models.ManyToManyField(Game)
     for_rent = models.JSONField(blank=True, null=True)  # JSONField is a dictionary <game:PricePerHour>
 

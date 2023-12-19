@@ -1,7 +1,7 @@
 # shareplay/serializers.py
 
 from rest_framework import serializers
-from .models import Game, User, Transaction
+from .models import Game, UserProfile, Transaction
 
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,7 +10,7 @@ class GameSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = UserProfile
         fields = '__all__'
 
 class TransactionSerializer(serializers.ModelSerializer):

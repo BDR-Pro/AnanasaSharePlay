@@ -1,7 +1,8 @@
 from django.urls import path
 
-from . import views
+from .views import index , detail
 
 urlpatterns = [
-    path('', views.index)
+    path('', index),
+    path('game/<slug:slug>/', detail),
 ]
