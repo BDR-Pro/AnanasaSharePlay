@@ -10,6 +10,8 @@ class Game(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to='images/')
     owner = models.JSONField(blank=True, null=True)  # JSONField is a dictionary <owner:PricePerHour>
+    def __str__(self):
+        return self.title
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,default=1)

@@ -1,14 +1,39 @@
-/* Detail.css */
+/* Add your custom styles here */
+
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif; /* Choose a better font here */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 .detail-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .detail-image {
-    max-width: 50%;
-    height: auto;
-    margin: 0 auto;
-  }
-  
+  max-width: 800px; /* Adjust the max-width based on your design */
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.detail-image {
+  width: 50%;
+  height: auto;
+  max-height: 40px; /* Set a maximum height for the image */
+  object-fit: cover; /* Maintain aspect ratio while covering the container */
+}
+
+.card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden; /* Ensure rounded corners don't get cut off */
+}
+
+.card-title {
+  font-size: 2rem; /* Increase font size for the title */
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.card-text {
+  font-size: 1.2rem;
+  margin-top: 10px;
+  color: #555; /* Set a color for better readability */
+}
