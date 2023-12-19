@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import Detail from './detail'; // Import your Detail component
 
 const App = () => {
   const [games, setGames] = useState([]);
@@ -15,26 +17,39 @@ const App = () => {
   }, []); // The empty dependency array ensures the effect runs once on mount
 
   return (
-    <Row xs={1} md={2} className="g-4">
-      {games.map((game) => (
-        <Col key={game.id}>
-          <a href={`/game/${game.slug}`}>
-            <Card>
-              <Card.Img 
-                variant="top"
-                src={game.image}
-                style={{ maxWidth: '30%', height: 'auto' }}
-                className="d-flex justify-content-center mx-auto mt-3"
-              />
-              <Card.Body className="text-center">
-                <Card.Title>{game.title}</Card.Title>
-                <Card.Text>{game.description}</Card.Text>
-              </Card.Body>
-            </Card>
-          </a>
-        </Col>
-      ))}
-    </Row>
+    <Router>
+      <Switch>
+        {/* Route for the game list */}
+        <Route exact path="/">
+          <Row xs={1} md={2} className="g-4">
+            {games.map((game) => (
+              <Col key={game.id}>
+                <a href={`/game/${game.slug}`}>
+                  <Card>
+                    <Card.Img
+                      variant="top"
+                      src={game.image}
+                      style={{ maxWidth: '30%', height: 'auto' }}
+                      className="d-flex justify-content-center mx-auto mt-3"
+                    />
+                    <Card.Body className="text-center">
+                      <Card.Title>{game.title}</Card.Title>
+                      <Card.Text>{game.description}</Card.Text>
+                    </Card.Body>
+                  </Card>
+                </a>
+              </Col>
+            ))}
+          </Row>
+        </Route>
+
+        {/* Route for individual game details */}
+        <Route path="/game/:slug">
+          <Detail />
+        </Route>
+
+      </Switch>
+    </Router>
   );
 };
 

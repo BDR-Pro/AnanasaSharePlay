@@ -2,7 +2,15 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
-  entry: "./src/index.js",
+  devtool: 'eval-source-map',
+  entry: {
+    compileddetail:"./src/components/detail.js"  // Update the path to your detail.js
+  },
+  // webpack.config.js
+resolve: {
+  extensions: ['.js', '.json', '.wasm'],
+},
+
   output: {
     path: path.resolve(__dirname, "./static/frontend"),
     filename: "[name].js",
