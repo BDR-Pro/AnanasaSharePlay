@@ -5,6 +5,10 @@
 
 Website to share play for games with customers.
 
+  <a href="https://www.reddit.com/r/ananasaSharePlay/" target="_blank">
+        <img src="https://github.com/BDR-Pro/ananasaSharePlay/assets/91114465/691cd88e-25a4-4528-8909-5140fe0246a7" alt="Reddit" width="50">
+    </a>
+
 ## Table of Contents
 
 - [Features](#features)
