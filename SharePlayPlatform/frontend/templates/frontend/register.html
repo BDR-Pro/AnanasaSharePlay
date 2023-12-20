@@ -2,14 +2,12 @@
 <html>
   <head>
     <!-- Add this line to your HTML file to import Bootstrap CSS -->
-`<!-- Add this line to your HTML file to import Bootstrap CSS -->
-  <link
-  rel="stylesheet"
-  href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-  integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-  crossorigin="anonymous"
-  />
-
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,13 +18,12 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
     />
-    <link rel="stylesheet" type="text/css" href="{% static "css/signUp.css" %}"
-    />
+    <link rel="stylesheet" type="text/css" href="{% static "css/signUp.css" %}" />
   </head>
   <body>
-    {% csrf_token %}
     <div id="main">
       <div id="app"></div>
+      <input type="hidden" id="csrf_token" value="{% csrf_token %}">
     </div>
 
     <script src="{% static "frontend/SignUp.js" %}"></script>

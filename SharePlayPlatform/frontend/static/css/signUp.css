@@ -7,7 +7,17 @@
     align-items: center;
     justify-content: center;
   }
-  
+
+  .SignUpFormButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: 50px;
+    border-radius: 5px;
+ }
+
   /* Add some padding and border to the form */
   .SignUpFormWrapper {
     max-width: 600px;
