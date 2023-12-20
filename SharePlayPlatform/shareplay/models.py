@@ -15,8 +15,9 @@ class Game(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,default=1)
+    nickname= models.CharField(max_length=255, blank=True, null=True, default='')
     avatar = models.ImageField(upload_to='avatar/', default='avatar/default.png')
-    games = models.ManyToManyField(Game)
+    games = models.ManyToManyField(Game, blank=True, related_name='user_games',default=None)
     for_rent = models.JSONField(blank=True, null=True)  # JSONField is a dictionary <game:PricePerHour>
 
 class Transaction(models.Model):

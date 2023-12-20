@@ -1,0 +1,38 @@
+/* SignUpForm.css */
+
+/* Center the form on the page */
+.SignUpFormContainer {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Add some padding and border to the form */
+  .SignUpFormWrapper {
+    max-width: 600px;
+    width: 100%;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Added box shadow for a shadow effect */
+  }
+  
+  /* Style form controls */
+  .SignUpFormGroup {
+    margin-bottom: 20px;
+  }
+  
+  .SignUpFormLabel {
+    font-weight: bold;
+  }
+  
+  /* Adjust checkbox alignment */
+  .SignUpFormCheck {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Style the submit button */
+  .SignUpSubmitButton {
+    width: 100%;
+  }

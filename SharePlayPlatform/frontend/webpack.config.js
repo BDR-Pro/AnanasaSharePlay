@@ -4,7 +4,7 @@ const webpack = require("webpack");
 module.exports = {
   devtool: 'eval-source-map',
   entry: {
-    compileddetail:"./src/components/detail.js"  // Update the path to your detail.js
+    signUp:"./src/components/comp_signUp.js"  // Update the path to your detail.js
   },
   // webpack.config.js
 resolve: {

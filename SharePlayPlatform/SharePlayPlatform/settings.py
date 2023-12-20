@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'shareplay',
     'frontend',
     'rest_framework',
+    'users'
     ]
 
 MIDDLEWARE = [

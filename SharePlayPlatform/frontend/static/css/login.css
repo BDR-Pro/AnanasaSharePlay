@@ -1,0 +1,40 @@
+/* LoginForm.css */
+
+/* Center the form on the page */
+.FormContainer {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Add some padding and border to the form */
+  .FormWrapper {
+    max-width: 00px;
+    width: 100%;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Style form controls */
+  .FormGroup {
+    margin-bottom: 20px;
+  }
+  
+  .FormLabel {
+    font-weight: bold;
+  }
+  
+  /* Adjust checkbox alignment */
+  .FormCheck {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Style the submit button */
+  .SubmitButton {
+    width: 100%;
+  }
+  

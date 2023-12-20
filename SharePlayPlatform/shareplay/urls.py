@@ -12,4 +12,5 @@ urlpatterns = [
     path('invoicelist/', Transactionslist.as_view(), name='Transactionslist'),
     path('gamesdetail/<slug>/', GamesDetail.as_view(), name='GamesDetail'),
     
+    
 ]
