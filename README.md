@@ -100,7 +100,9 @@ List any software or dependencies that need to be installed.
 
 ## WireFrame
 
-<iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FxW1QPrN9fj3nZpWfjnEH6y%2FWireframe%3Ftype%3Dwhiteboard%26node-id%3D0%253A1%26t%3DbmorQBuViPIROvGF-1" allowfullscreen></iframe>
+<a href="https://www.figma.com/file/xW1QPrN9fj3nZpWfjnEH6y/Wireframe?type=whiteboard&node-id=0%3A1&t=bmorQBuViPIROvGF-1" target="_blank">
+<img src="https://github.com/BDR-Pro/AnanasaSharePlay/assets/91114465/1d385e4c-3072-4a3e-a0e7-0bd5785d9d9a" alt="UML" width="720"/>
+</a>
 
   
 ## Contributing
