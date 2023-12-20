@@ -20,6 +20,7 @@ Website to share play for games with customers.
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 - [User Stories](https://github.com/BDR-Pro/ananasaSharePlay/blob/main/UserStories.md)
+- [WireFrames](#WireFrame)
 
 ## Features
 
@@ -97,7 +98,9 @@ List any software or dependencies that need to be installed.
 <img src="https://github.com/BDR-Pro/ananasaSharePlay/assets/91114465/9064789a-d2d6-4b9f-a4b2-63568f2a35c7" alt="UML" width="720"/>
 </a>
 
-
+## WireFrame
+  <iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://www.figma.com/embed?  embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FxW1QPrN9fj3nZpWfjnEH6y%2FWireframe%3Ftype%3Dwhiteboard%26node-id%3D0%253A1%26t%3DbmorQBuViPIROvGF-1" allowfullscreen></iframe>
+  
 ## Contributing
 
 Explain how others can contribute to your project. Include guidelines for pull requests and reporting issues.
