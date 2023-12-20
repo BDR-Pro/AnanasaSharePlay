@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from shareplay.models import Game
 from django.shortcuts import get_object_or_404
 
@@ -15,3 +15,15 @@ def login(request, *args, **kwargs):
 
 def register(request, *args, **kwargs):
     return render(request, 'frontend/register.html')
+
+def search(request, *args, **kwargs):
+    query=request.GET.get('query')
+    games = Game.objects.all().filter(title__icontains=query)
+    return render(request, 'frontend/search.html',{"games": games, "query": query})
+
+def Profile(request, *args, **kwargs):
+    if request.user.is_authenticated:
+        user = request.user
+        return redirect(f'/users/{user}',{"user": user})
+    else:
+        return redirect('/login')

@@ -4,7 +4,6 @@ import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Detail from './detail'; // Import your Detail component
-import './App.css'; // Import your CSS file for styling
 
 const App = () => {
   const [games, setGames] = useState([]);
@@ -22,7 +21,7 @@ const App = () => {
       <Switch>
         {/* Route for the game list */}
         <Route exact path="/">
-          <Row xs={1} md={2} className="g-4">
+          <Row xs={2} md={2} className="g-4">
             {games.map((game) => (
               <Col key={game.id}>
                 <a href={`/game/${game.slug}`}>
@@ -30,7 +29,7 @@ const App = () => {
                     <Card.Img
                       variant="top"
                       src={game.image}
-                      style={{ maxWidth: '30%', height: 'auto' }}
+                      style={{ maxWidth: '100%', height: 'auto' }}
                       className="d-flex justify-content-center mx-auto mt-3"
                     />
                     <Card.Body className="text-center">

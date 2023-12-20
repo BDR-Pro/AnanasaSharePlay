@@ -52,6 +52,7 @@ function NavbarComponent() {
               {/* ... (Same as your existing code) */}
               <Offcanvas.Body>
                 <Nav className="justify-content-end flex-grow-1 pe-3">
+
                   {!isAuthenticated && (
                     <>
                       <Nav.Link href="/login">Login</Nav.Link>
