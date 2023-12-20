@@ -18,7 +18,8 @@ Website to share play for games with customers.
 - [UML](#UML)
 - [Contributing](#contributing)
 - [License](#license)
-- [Acknowledgments](#acknowledgments) 
+- [Acknowledgments](#acknowledgments)
+- [User Stories](https://github.com/BDR-Pro/ananasaSharePlay/blob/main/user_stories.md)
 
 ## Features
 
