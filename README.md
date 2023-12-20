@@ -1,4 +1,4 @@
-# ananasaSharePlay
+# AnanasaSharePlay
 
 <img src="https://github.com/BDR-Pro/ananasaSharePlay/assets/91114465/1b0f839f-81e8-4c59-a61b-ccb770dfbc0e" alt="ananasaSharePlay" width="250"/>
 
