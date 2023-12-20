@@ -9,6 +9,15 @@ body {
 .container {
     margin-top: 20px;
 }
+/* App.css */
+.description {
+  display: none;
+}
+
+/* Show description on hover */
+.card:hover .description {
+  display: block;
+}
 
 .g-4 {
     display: flex;

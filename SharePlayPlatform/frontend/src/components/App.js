@@ -4,6 +4,7 @@ import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Detail from './detail'; // Import your Detail component
+import './App.css'; // Import your CSS file for styling
 
 const App = () => {
   const [games, setGames] = useState([]);
@@ -34,7 +35,7 @@ const App = () => {
                     />
                     <Card.Body className="text-center">
                       <Card.Title>{game.title}</Card.Title>
-                      <Card.Text>{game.description}</Card.Text>
+                      <Card.Text className="description">{game.description}</Card.Text>
                     </Card.Body>
                   </Card>
                 </a>
@@ -47,7 +48,6 @@ const App = () => {
         <Route path="/game/:slug">
           <Detail />
         </Route>
-
       </Switch>
     </Router>
   );

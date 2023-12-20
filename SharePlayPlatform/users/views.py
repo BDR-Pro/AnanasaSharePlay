@@ -22,6 +22,12 @@ def login_view(request):
     else:
         return JsonResponse({'message': 'Invalid request method'}, status=400)
     
+def is_user_authenticated(request):
+    if request.user.is_authenticated:
+        return JsonResponse({'message': 'User is authenticated'})
+    else:
+        return JsonResponse({'message': 'User is not authenticated'}, status=401)
+    
 def register_view(request):
     if request.method == 'POST':
         try:
