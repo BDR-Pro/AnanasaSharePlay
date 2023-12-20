@@ -1,4 +1,4 @@
-# ananasaSharePlay
+# AnanasaSharePlay
 
 <img src="https://github.com/BDR-Pro/ananasaSharePlay/assets/91114465/1b0f839f-81e8-4c59-a61b-ccb770dfbc0e" alt="ananasaSharePlay" width="250"/>
 
@@ -20,6 +20,7 @@ Website to share play for games with customers.
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 - [User Stories](https://github.com/BDR-Pro/ananasaSharePlay/blob/main/UserStories.md)
+- [WireFrames](#WireFrame)
 
 ## Features
 
@@ -97,7 +98,13 @@ List any software or dependencies that need to be installed.
 <img src="https://github.com/BDR-Pro/ananasaSharePlay/assets/91114465/9064789a-d2d6-4b9f-a4b2-63568f2a35c7" alt="UML" width="720"/>
 </a>
 
+## WireFrame
 
+<a href="https://www.figma.com/file/xW1QPrN9fj3nZpWfjnEH6y/Wireframe?type=whiteboard&node-id=0%3A1&t=bmorQBuViPIROvGF-1" target="_blank">
+<img src="https://github.com/BDR-Pro/AnanasaSharePlay/assets/91114465/1d385e4c-3072-4a3e-a0e7-0bd5785d9d9a" alt="UML" width="720"/>
+</a>
+
+  
 ## Contributing
 
 Explain how others can contribute to your project. Include guidelines for pull requests and reporting issues.
