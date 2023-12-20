@@ -5,7 +5,7 @@ module.exports = {
   devtool: 'eval-source-map',
   entry: {
     signUp: "./src/components/comp_signUp.js",
-    login: "./src/components/login.js",
+    login: "./src/components/comp_login.js",
     index: "./src/components/App.js",
     compileddetail: "./src/components/detail.js",
     navbar: "./src/components/navbar_comp.js",

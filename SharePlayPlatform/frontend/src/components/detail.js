@@ -60,6 +60,7 @@ const Detail = () => {
     </Container>
   );
 };
+export default Detail;
 
 // Assuming you have a div with id 'detail' in your HTML
 const appDetail = document.getElementById('detail');

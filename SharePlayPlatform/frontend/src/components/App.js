@@ -4,6 +4,7 @@ import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Detail from './detail'; // Import your Detail component
+import { render } from 'react-dom';
 
 const App = () => {
   const [games, setGames] = useState([]);
@@ -53,3 +54,7 @@ const App = () => {
 };
 
 export default App;
+
+
+const appDiv = document.getElementById('app');
+render(<App />, appDiv);
