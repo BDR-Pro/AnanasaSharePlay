@@ -93,9 +93,9 @@ List any software or dependencies that need to be installed.
     - Track your rentals or sales through your user profile.
    
 ## UML
-
+<a hred="https://lucid.app/lucidchart/bd988306-2fee-47c5-81d9-7d2820e9aefd/edit?viewport_loc=192%2C-34%2C2894%2C1208%2C0_0&invitationId=inv_320b4186-7469-4f53-b93d-ccb706a44d5e"
 <img src="https://github.com/BDR-Pro/ananasaSharePlay/assets/91114465/9064789a-d2d6-4b9f-a4b2-63568f2a35c7" alt="UML" width="720"/>
-
+</a>
 
 
 ## Contributing
