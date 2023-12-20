@@ -93,7 +93,7 @@ List any software or dependencies that need to be installed.
    
 ## UML
 
-<img src="https://github.com/BDR-Pro/ananasaSharePlay/assets/91114465/b81c4b2f-3362-441a-ae6c-c2e5e36113d8" alt="UML" width="250"/>
+<img src="https://github.com/BDR-Pro/ananasaSharePlay/assets/91114465/9064789a-d2d6-4b9f-a4b2-63568f2a35c7" alt="UML" width="480"/>
 
 
 
