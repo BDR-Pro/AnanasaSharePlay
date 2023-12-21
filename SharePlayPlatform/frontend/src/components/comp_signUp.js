@@ -11,20 +11,16 @@ function SignUp() {
     event.preventDefault();
 
     const formData = new FormData(event.target);
+    const csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
 
     try {
       const response = await fetch('/users/register/', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'X-CSRFToken': csrfToken, // Make sure to have csrfToken available
         },
-        body: JSON.stringify({
-          nickname: formData.get('nickname'),
-          email: formData.get('email'),
-          password: formData.get('password'),
-          avatar: formData.get('avatar'),
-        }),
+        body:
+          formData
       });
 
       if (!response.ok) {
@@ -51,13 +47,17 @@ function SignUp() {
       )}
     <div className='SignUpFormContainer'>
     <div className='SignUpFormWrapper'>
-      <Form onSubmit={handleSubmit}>
+      <Form encType="multipart/form-data" onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicNickname">
           <Form.Label>Nick Name</Form.Label>
           <Form.Control type="text" name="nickname" placeholder="Enter name" />
           <Form.Text className="text-muted">NickName to make you unique</Form.Text>
         </Form.Group>
-
+        <Form.Group className="mb-3" controlId="formBasicUser">
+          <Form.Label>Username</Form.Label>
+          <Form.Control type="text" name="username" placeholder="Enter username" />
+          <Form.Text className="text-muted">username to make you unique</Form.Text>
+        </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control type="email" name="email" placeholder="Enter email" />

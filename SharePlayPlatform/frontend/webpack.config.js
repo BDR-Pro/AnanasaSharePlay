@@ -9,6 +9,7 @@ module.exports = {
     index: "./src/components/App.js",
     compileddetail: "./src/components/detail.js",
     navbar: "./src/components/navbar_comp.js",
+    profile: "./src/components/profile_comp.js",
   },
   resolve: {
     extensions: ['.js', '.json', '.wasm'],

@@ -23,9 +23,12 @@
   <body>
     <div id="main">
       <div id="app"></div>
-      <input type="hidden" id="csrf_token" value="{% csrf_token %}">
+     
+      {% csrf_token %}
     </div>
-
+    <script >
+      var csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+    </script>
     <script src="{% static "frontend/SignUp.js" %}"></script>
   </body>
 </html>

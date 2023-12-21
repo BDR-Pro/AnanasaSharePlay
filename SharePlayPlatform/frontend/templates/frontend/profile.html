@@ -1,0 +1,15 @@
+<!-- profile.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+</head>
+<body>
+   {{ user_info|json_script|safe }}
+    <script src="{% static 'frontend/profile.js' %}"></script>
+</body>
+</html>

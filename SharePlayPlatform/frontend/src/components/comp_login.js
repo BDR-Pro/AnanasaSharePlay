@@ -22,7 +22,7 @@ function LoginForm() {
           'X-CSRFToken': csrfToken,
         },
         body: JSON.stringify({
-          email: formData.get('email'),
+          username: formData.get('username'),
           password: formData.get('password'),
         }),
       });
@@ -54,10 +54,9 @@ function LoginForm() {
         )}
         <Form method="POST" onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control type="email" name="email" id="email" placeholder="Enter email" />
+            <Form.Label>Username</Form.Label>
+            <Form.Control type="text" name="username" id="username" placeholder="Enter Username" />
             <Form.Text className="text-muted">
-              We'll never share your email with anyone else.
             </Form.Text>
           </Form.Group>
 
