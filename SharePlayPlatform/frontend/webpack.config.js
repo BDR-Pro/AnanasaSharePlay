@@ -10,6 +10,7 @@ module.exports = {
     compileddetail: "./src/components/detail.js",
     navbar: "./src/components/navbar_comp.js",
     profile: "./src/components/profile_comp.js",
+    ProfileEdit: "./src/components/ProfileEdit.js",
   },
   resolve: {
     extensions: ['.js', '.json', '.wasm'],

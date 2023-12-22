@@ -58,6 +58,13 @@ function SignUp() {
           <Form.Control type="text" name="username" placeholder="Enter username" />
           <Form.Text className="text-muted">username to make you unique</Form.Text>
         </Form.Group>
+        
+        <Form.Group className="mb-3" controlId="formBasicBio">
+          <Form.Label>Bio</Form.Label>
+          <Form.Control type="text" name="bio" placeholder="Write about yourself" />
+          <Form.Text className="text-muted">Your Bio</Form.Text>
+        </Form.Group>
+
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control type="email" name="email" placeholder="Enter email" />
@@ -75,6 +82,13 @@ function SignUp() {
           <Form.Label>Avatar</Form.Label>
           <Form.Control type="file" name="avatar" />
         </Form.Group>
+
+        
+        <Form.Group controlId="formFile" className="mb-3">
+          <Form.Label>Header</Form.Label>
+          <Form.Control type="file" name="header" />
+        </Form.Group>
+
 
         <Button variant="primary" type="submit">
           Submit

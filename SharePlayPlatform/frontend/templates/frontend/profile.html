@@ -3,13 +3,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     {% load static %}
+    <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+  integrity="sha384-pzjw8LMy7F+frL6L+ttHJ6Qknp6qBw5bERXQaPx12eY3pysntWlgqlFiiZ9tZ" crossorigin="anonymous"
+/>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
 </head>
 <body>
-   {{ user_info|json_script|safe }}
+    <div id="profile"></div>
     <script src="{% static 'frontend/profile.js' %}"></script>
+    <stylesheet href="{% static 'css/profile.css' %}"></stylesheet>
 </body>
 </html>

@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User as AuthUser
 from shareplay.models import UserProfile
 import json
+from django.http import HttpResponseNotFound
 from django.http import JsonResponse
 
 
@@ -71,17 +72,13 @@ def logout_view(request):
         return redirect('/')
     
 def profile(request, username):
+    if username=='undefined':
+        return JsonResponse({'message': 'Invalid username'}, status=400)
     try:
-        user=AuthUser.objects.get(username=username)
-        user_profile = UserProfile.objects.get(user=user)
-        user_info = {
-            'username': user_profile.user.username,
-            'email': user_profile.user.email,
-            'avatar': str(user_profile.avatar),  # Assuming avatar is a FileField
-            'nickname': user_profile.nickname,
-            # Add more fields as needed
-        }
-        return render(request, 'frontend/profile.html', {'user_info': user_info})
+        if UserProfile.objects.get(user=AuthUser.objects.get(username=username)):
+            return render(request, 'frontend/profile.html')
     except UserProfile.DoesNotExist:
         # Handle the case when the user profile does not exist
-        return render(request, 'frontend/profile_not_found.html')
+        return HttpResponseNotFound('<h1>Page not found</h1>')
+    
+
