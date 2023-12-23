@@ -1,7 +1,7 @@
 # shareplay/urls.py
 
 from django.urls import path
-from .views import Games, Users, Transactions, Gameslist, Userslist, Transactionslist , GamesDetail, profile, updateProfile
+from .views import Games, Users, Transactions, Gameslist, Userslist, Transactionslist , GamesDetail, profile, updateProfile, add
 
 urlpatterns = [
     path('games/', Games.as_view(), name='Games'),
@@ -12,7 +12,8 @@ urlpatterns = [
     path('userslist/', Userslist.as_view(), name='Userslist'),
     path('invoicelist/', Transactionslist.as_view(), name='Transactionslist'),
     path('gamesdetail/<slug>/', GamesDetail.as_view(), name='GamesDetail'),
-    path('updateProfile/',updateProfile, name='updateProfile')
+    path('updateProfile/',updateProfile, name='updateProfile'),
+    path('add',add, name='add'),
     
     
 ]

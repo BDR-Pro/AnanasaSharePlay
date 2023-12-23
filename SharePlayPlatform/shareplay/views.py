@@ -72,3 +72,22 @@ def updateProfile(request):
                          'nickname': "", 'avatar': "",
                          'bio': "",
                          'header': "",})
+        
+        
+        
+
+
+
+def add(request):
+    if request.user.is_authenticated and request.method == 'POST' :
+        game=Game.objects.get(slug=request.POST.get('id'))
+        user=AuthUser.objects.get(username=request.user.username)
+        user=UserProfile.objects.get(user=user)
+        if not Transaction.objects.filter(game=game,user=user).exists():
+            transaction=Transaction(game=game,user=user)
+            transaction.save()
+            return JsonResponse({'status': "success"})
+        else:
+            return JsonResponse({'status': "fail"})
+    else:
+        return JsonResponse({'status': "Use POST method"})
