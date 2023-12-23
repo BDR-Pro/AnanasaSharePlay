@@ -19,7 +19,11 @@
 </head>
 <body>
     {% csrf_token %}
+
+    <div id="navbar"></div>
     <div id="profile"></div>
+
+    <script src="{% static 'frontend/navbar.js' %}"></script>
     <script src="{% static 'frontend/profile.js' %}"></script>
     <stylesheet href="{% static 'css/profile.css' %}"></stylesheet>
 </body>

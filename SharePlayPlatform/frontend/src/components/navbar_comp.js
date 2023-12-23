@@ -59,7 +59,13 @@ function NavbarComponent() {
                       <Nav.Link href="/register">Sign up</Nav.Link>
                     </>
                   )}
-                  {isAuthenticated && <Nav.Link href="/profile">Profile</Nav.Link>}
+
+                  {isAuthenticated && (
+                    <>
+                   <Nav.Link href="/profile">Profile</Nav.Link>
+                   <Nav.Link href="/users/logout">Logout</Nav.Link>
+                   </> 
+                  )}
                   <NavDropdown
                     title="Library"
                     id={`offcanvasNavbarDropdown-expand-${expand}`}

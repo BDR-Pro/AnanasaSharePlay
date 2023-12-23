@@ -14,7 +14,7 @@ function LoginForm() {
     const formData = new FormData(event.target);
 
     try {
-      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      const csrfToken =  document.getElementsByName("csrfmiddlewaretoken")[0].value;
       const response = await fetch('/users/login/', {
         method: 'POST',
         headers: {
@@ -28,6 +28,11 @@ function LoginForm() {
       });
 
       const jsonResponse = await response.json(); // Parse the JSON response
+      console.log(jsonResponse);
+
+      if (jsonResponse.message  === "Login successful") {
+        window.location.href = "/";
+      }
 
       if (response.ok) {
         // Handle success (optional)

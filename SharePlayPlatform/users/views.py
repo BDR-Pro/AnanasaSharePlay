@@ -13,9 +13,10 @@ def login_view(request):
             data = json.loads(request.body)
             username = data.get('username')
             password = data.get('password')
+            print(data)
+            print(request.headers)
             auth = authenticate(username=username, password=password)
             if auth is not None:
-                login(request, auth)
                 return JsonResponse({'message': 'Login successful'})
             else:
                 return JsonResponse({'message': 'Invalid credentials'}, status=401)
@@ -67,6 +68,7 @@ def register_view(request):
     
     
 def logout_view(request):
+    print(request.user)
     if request.user.is_authenticated:
         logout(request)
         return redirect('/')
@@ -74,6 +76,13 @@ def logout_view(request):
 def profile(request, username):
     if username=='undefined':
         return JsonResponse({'message': 'Invalid username'}, status=400)
+    if username=="login":
+        return login_view(request)
+    if username=="logout":
+        return logout_view(request)
+    if username=="register":
+        return register_view(request)
+    
     try:
         if UserProfile.objects.get(user=AuthUser.objects.get(username=username)):
             return render(request, 'frontend/profile.html')
