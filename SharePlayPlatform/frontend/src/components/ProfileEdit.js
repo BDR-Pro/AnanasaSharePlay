@@ -1,9 +1,8 @@
-// ProfileEdit.js
-
 import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Alert from 'react-bootstrap/Alert';
+import axios from 'axios';
 
 const styles = {
   container: {
@@ -50,9 +49,9 @@ const styles = {
   },
 };
 
-
 const ProfileEdit = () => {
   const [errorMessage, setErrorMessage] = useState(null);
+  const [updatedUserData, setUpdatedUserData] = useState(null);
   const [userInfo, setUserInfo] = useState({});
 
   useEffect(() => {
@@ -68,27 +67,28 @@ const ProfileEdit = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData(event.target);
+    const formData = new FormData();
     const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 
+    formData.append('avatar', event.target.avatar.files[0]);
+    formData.append('header', event.target.header.files[0]);
+    formData.append('username', event.target.username.value);
+    formData.append('email', event.target.email.value);
+    formData.append('bio', event.target.bio.value);
+    formData.append('password', event.target.password.value);
+
     try {
-      const response = await fetch('/api/updateProfile/', {
-        method: 'POST',
+      const response = await axios.post('/api/updateProfile/', formData, {
         headers: {
           'X-CSRFToken': csrfToken,
         },
-        body: formData,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
-      }
-
-      const updatedUserData = await response.json();
+      const updatedUserData = response.data;
       // Update successful
       setErrorMessage(null);
       console.log('Profile update successful!', updatedUserData);
+      setUpdatedUserData(updatedUserData);
     } catch (error) {
       // Handle error
       setErrorMessage(error.message);
@@ -103,11 +103,21 @@ const ProfileEdit = () => {
           <p>{errorMessage}</p>
         </Alert>
       )}
-      <div className="rounded-top text-white d-flex flex-row" id="background" style={{ backgroundImage: `url(${userInfo.header})`, width: '100%', height: '200px', borderRadius: '10px' }}>
-        <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
-        <div style={styles.container}>
-            <div style={styles.form}>
-
+      <div style={styles.container}>
+        <div style={styles.formWrapper}>
+          {updatedUserData && (
+            <Alert variant="success" onClose={() => setUpdatedUserData(null)} dismissible>
+              <Alert.Heading>Success</Alert.Heading>
+              <p>Your profile has been updated!</p>
+              <Button variant="danger" type="submit" style={styles.button} onClick={() => window.location.reload()}>
+                Refresh Page
+              </Button>
+            </Alert>
+              
+          )
+          
+          }
+          
           <Form encType="multipart/form-data" onSubmit={handleSubmit}>
             <Form.Group controlId="formBasicAvatar">
               <Form.Label>Avatar</Form.Label>
@@ -135,14 +145,12 @@ const ProfileEdit = () => {
             <Form.Group controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
               <Form.Control type="password" placeholder="Change Your Password" name="password" />
-            </Form.Group> 
+            </Form.Group>
 
-            <Button variant="danger" type="submit">
+            <Button variant="danger" type="submit" style={styles.button}>
               Save Changes
             </Button>
           </Form>
-          </div>
-          </div>
         </div>
       </div>
     </div>

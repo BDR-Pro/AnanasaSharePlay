@@ -68,10 +68,7 @@ def updateProfile(request):
                          'bio': user.bio,
                          'header': user.header.url,})
     else:
-        return JsonResponse({'username': "", 'email': "",
-                         'nickname': "", 'avatar': "",
-                         'bio': "",
-                         'header': "",})
+        return JsonResponse({'status': "Use POST method"})
         
         
         
