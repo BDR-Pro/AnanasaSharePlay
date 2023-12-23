@@ -47,3 +47,28 @@ def profile(request,username):
                          'nickname': user.nickname, 'avatar': user.avatar.url,
                          'bio': user.bio,
                          'header': user.header.url,})
+
+
+def updateProfile(request):
+    if request.user.is_authenticated and request.method == 'POST' :
+        user=AuthUser.objects.get(username=request.user.username)
+        user=UserProfile.objects.get(user=user)
+        if request.POST.get('password'):
+            user.user.set_password(request.POST.get('password'))
+        if request.POST.get('username'):
+            user.user.username=request.POST.get('username') if not AuthUser.objects.filter(username=request.POST.get('username')).exists() else user.user.username
+        user.user.email=request.POST.get('email') if request.POST.get('email') else user.user.email
+        user.nickname=request.POST.get('nickname') if request.POST.get('nickname') else user.nickname
+        user.bio=request.POST.get('bio') if request.POST.get('bio') else user.bio
+        user.avatar=request.FILES.get('avatar') if request.FILES.get('avatar') else user.avatar
+        user.header=request.FILES.get('header') if request.FILES.get('header') else user.header
+        user.save()
+        return JsonResponse({'username': user.user.username, 'email': user.user.email,
+                         'nickname': user.nickname, 'avatar': user.avatar.url,
+                         'bio': user.bio,
+                         'header': user.header.url,})
+    else:
+        return JsonResponse({'username': "", 'email': "",
+                         'nickname': "", 'avatar': "",
+                         'bio': "",
+                         'header': "",})

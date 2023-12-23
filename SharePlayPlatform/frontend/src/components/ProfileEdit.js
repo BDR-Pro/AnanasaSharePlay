@@ -1,8 +1,49 @@
+// ProfileEdit.js
+
 import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Alert from 'react-bootstrap/Alert';
-import { render } from 'react-dom';
+
+const styles = {
+  container: {
+    maxWidth: '400px', // Adjust the maxWidth as needed
+    margin: '0 auto',
+    maxHeight: '100%',
+    padding: '20px',
+  },
+  form: {
+    backgroundColor: '#fff',
+    borderRadius: '10px',
+    padding: '20px',
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+  },
+  label: {
+    fontWeight: 'bold',
+    marginBottom: '0.5rem',
+  },
+  input: {
+    width: '100%',
+    padding: '0.5rem',
+    marginBottom: '1rem',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    boxSizing: 'border-box',
+  },
+  button: {
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    padding: '0.75rem 1rem',
+    fontSize: '1rem',
+    borderRadius: '4px',
+    cursor: 'pointer',
+  },
+  buttonHover: {
+    backgroundColor: '#0056b3',
+  },
+};
+
 
 const ProfileEdit = () => {
   const [errorMessage, setErrorMessage] = useState(null);
@@ -38,9 +79,10 @@ const ProfileEdit = () => {
         throw new Error(errorData.message);
       }
 
+      const updatedUserData = await response.json();
       // Update successful
       setErrorMessage(null);
-      console.log('Profile update successful!');
+      console.log('Profile update successful!', updatedUserData);
     } catch (error) {
       // Handle error
       setErrorMessage(error.message);
@@ -55,10 +97,22 @@ const ProfileEdit = () => {
           <p>{errorMessage}</p>
         </Alert>
       )}
-      <div className="ProfileEditFormContainer">
-        <div className="ProfileEditFormWrapper">
+      <div className="rounded-top text-white d-flex flex-row" id="background" style={{ backgroundImage: `url(${userInfo.header})`, width: '100%', height: '200px', borderRadius: '10px' }}>
+        <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
+        <div style={styles.container}>
+            <div style={styles.form}>
+
           <Form encType="multipart/form-data" onSubmit={handleSubmit}>
-            {/* Include fields for updating profile information */}
+            <Form.Group controlId="formBasicAvatar">
+              <Form.Label>Avatar</Form.Label>
+              <Form.Control type="file" name="avatar" />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicHeader">
+              <Form.Label>Header</Form.Label>
+              <Form.Control type="file" name="header" />
+            </Form.Group>
+
             <Form.Group controlId="formBasicUsername">
               <Form.Label>Username</Form.Label>
               <Form.Control type="text" defaultValue={userInfo.username} name="username" />
@@ -71,22 +125,19 @@ const ProfileEdit = () => {
               <Form.Label>Bio</Form.Label>
               <Form.Control as="textarea" rows={3} defaultValue={userInfo.bio} name="bio" />
             </Form.Group>
-            <Form.Group controlId="formBasicAvatar">
-              <Form.Label>Avatar</Form.Label>
-              <Form.Control type="file" name="avatar" />
-            </Form.Group>
 
-            {/* Add this block for the header file input */}
-            <Form.Group controlId="formBasicHeader">
-              <Form.Label>Header</Form.Label>
-              <Form.Control type="file" name="header" />
-            </Form.Group>
+            {/* Add a password field if needed */}
+            {/* <Form.Group controlId="formBasicPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control type="password" name="password" />
+            </Form.Group> */}
 
-            {/* ... */}
-            <Button variant="primary" type="submit">
+            <Button variant="danger" type="submit">
               Save Changes
             </Button>
           </Form>
+          </div>
+          </div>
         </div>
       </div>
     </div>
@@ -94,7 +145,3 @@ const ProfileEdit = () => {
 };
 
 export default ProfileEdit;
-
-// Use the ProfileEdit component in your application
-const appDiv = document.getElementById('profile');
-render(<ProfileEdit />, appDiv);

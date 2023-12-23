@@ -6,8 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faAt, faEdit } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import { MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardText, MDBCardImage } from 'mdb-react-ui-kit';
-import { Button } from 'flowbite-react';
 import ProfileEdit from './ProfileEdit'; // Import the ProfileEdit component
+import { Button } from 'react-bootstrap';
 
 const CommonProfile = ({ userInfo, onEditClick, isEditable }) => {
   return (
@@ -16,7 +16,7 @@ const CommonProfile = ({ userInfo, onEditClick, isEditable }) => {
         <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
           <MDBCardImage src={userInfo.avatar} alt="Avatar" className="mt-4 mb-2 img-thumbnail" fluid style={{ width: '150px', zIndex: '1' }} />
           {isEditable ? (
-            <Button outline gradientDuoTone="tealToLime" style={{ height: '36px', overflow: 'visible' }} onClick={onEditClick}>
+            <Button variant="secondary" style={{ height: '36px', overflow: 'visible'}} onClick={onEditClick}>
               <FontAwesomeIcon icon={faEdit} className="me-2" />
               Edit profile
             </Button>
