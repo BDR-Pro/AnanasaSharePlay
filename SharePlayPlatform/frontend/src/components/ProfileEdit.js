@@ -7,20 +7,20 @@ import Alert from 'react-bootstrap/Alert';
 
 const styles = {
   container: {
-    maxWidth: '400px', // Adjust the maxWidth as needed
-    margin: '0 auto',
-    maxHeight: '100%',
-    padding: '20px',
+    height: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  form: {
-    backgroundColor: '#fff',
-    borderRadius: '10px',
+  formWrapper: {
+    maxWidth: '600px',
+    width: '100%',
     padding: '20px',
-    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+    borderRadius: '8px',
+    boxShadow: '0 0 20px rgba(0, 0, 0, 0.2)',
   },
   label: {
     fontWeight: 'bold',
-    marginBottom: '0.5rem',
   },
   input: {
     width: '100%',
@@ -31,12 +31,18 @@ const styles = {
     boxSizing: 'border-box',
   },
   button: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '10px',
+    marginBottom: '10px',
+    height: '50px',
+    borderRadius: '5px',
     backgroundColor: '#007bff',
     color: '#fff',
     border: 'none',
-    padding: '0.75rem 1rem',
     fontSize: '1rem',
-    borderRadius: '4px',
     cursor: 'pointer',
   },
   buttonHover: {
@@ -126,11 +132,10 @@ const ProfileEdit = () => {
               <Form.Control as="textarea" rows={3} defaultValue={userInfo.bio} name="bio" />
             </Form.Group>
 
-            {/* Add a password field if needed */}
-            {/* <Form.Group controlId="formBasicPassword">
+            <Form.Group controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" name="password" />
-            </Form.Group> */}
+              <Form.Control type="password" placeholder="Change Your Password" name="password" />
+            </Form.Group> 
 
             <Button variant="danger" type="submit">
               Save Changes
