@@ -95,4 +95,11 @@ def profile(request, username):
         # Handle the case when the user profile does not exist
         return HttpResponseNotFound('<h1>Page not found</h1>')
     
+def ProfileId(request,id):
+    user=UserProfile.objects.get(user=AuthUser.objects.get(id=id))
+    return redirect('/users/'+user.user.username)
 
+
+def getNameById(request,id):
+    user=UserProfile.objects.get(user=AuthUser.objects.get(id=id))
+    return JsonResponse({'nickname': user.nickname})

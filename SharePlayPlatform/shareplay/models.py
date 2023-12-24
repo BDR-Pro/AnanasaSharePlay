@@ -11,6 +11,8 @@ class Game(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to='images/')
     owner = models.JSONField(blank=True, null=True)  # JSONField is a dictionary <owner:PricePerHour>
+    updated_at = models.DateTimeField(auto_now=True)    
+    
     def __str__(self):
         return self.title
 
@@ -33,3 +35,10 @@ class Transaction(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
     is_paid = models.BooleanField(default=False)
+
+
+class Reviews(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    review = models.TextField()
+    rating = models.IntegerField()

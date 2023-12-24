@@ -1,9 +1,10 @@
 
 from rest_framework import generics
-from .models import Game, UserProfile, Transaction
-from .serializers import GameSerializer, UserSerializer, TransactionSerializer
+from .models import Game, UserProfile, Transaction, Reviews
+from .serializers import GameSerializer, UserSerializer, TransactionSerializer, ReviewsSerializer
 from django.http import JsonResponse
 from django.contrib.auth.models import User as AuthUser
+from django.shortcuts import get_object_or_404
 
 class Games(generics.CreateAPIView):
     queryset = Game.objects.all()
@@ -34,6 +35,25 @@ class GamesDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
     lookup_field = 'slug'
+    
+
+class ReviewsDetails(generics.ListAPIView):
+    serializer_class = ReviewsSerializer
+
+    def get_queryset(self):
+        game_slug = self.kwargs['game_slug']
+        return Reviews.objects.filter(game__slug=game_slug)
+    
+
+
+class ReviewCreate(generics.CreateAPIView):
+    serializer_class = ReviewsSerializer
+
+    def get_queryset(self):
+        game_slug = self.kwargs['game_slug']
+        return Reviews.objects.filter(game__slug=game_slug)
+
+
 
 
 def profile(request,username):

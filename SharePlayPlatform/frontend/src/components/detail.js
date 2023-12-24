@@ -4,6 +4,7 @@ import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import { render } from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import RatingStars from './RatingStars.js'; 
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
 const Detail = () => {
@@ -12,7 +13,26 @@ const Detail = () => {
   const [isFav, setIsFav] = useState(false);
   const [gameDetails, setGameDetails] = useState(null);
   const [error, setError] = useState(null);
+  const [comments, setComments] = useState(null);
   const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+
+  useEffect(() => {
+    const getComments = async () => {
+      try {
+        const response = await fetch(`/api/getComments/${slug}/`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setComments(data);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+        setError('Error fetching comments. Please try again later.');
+      }
+    };
+
+    getComments(); // Call the function to fetch comments
+  }, [slug]);
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -83,9 +103,7 @@ const Detail = () => {
     try {
       const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' ,
-        'X-CSRFToken': csrfToken
-      },
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
         body: JSON.stringify({ slug }),
       };
 
@@ -102,9 +120,7 @@ const Detail = () => {
     try {
       const requestOptions = {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' ,
-        'X-CSRFToken': csrfToken
-      },
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
         body: JSON.stringify({ slug }),
       };
 
@@ -115,7 +131,6 @@ const Detail = () => {
       console.error('Error removing from favorites:', error);
     }
     window.location.reload();
-
   };
 
   return (
@@ -131,11 +146,16 @@ const Detail = () => {
           <Card.Title className="h2">{gameDetails.title}</Card.Title>
           <Card.Text className="lead">{gameDetails.description}</Card.Text>
           <a href={`/game/genre/${gameDetails.genre}`}>
-          <Card.Text className="text-muted">{gameDetails.genre}</Card.Text>
-           </a>
+            <Card.Text className="text-muted">{gameDetails.genre}</Card.Text>
+          </a>
+          {isAuthenticated && (
+            <button className="btn btn-info">
+              <a href={`/game/${slug}/rent`}>Rent the game</a>
+            </button>
+          )}
 
           {isAuthenticated && isFav && (
-            <button className="btn btn-success" onClick={removeFav} >
+            <button className="btn btn-success" onClick={removeFav}>
               Remove from Favorites
               <FontAwesomeIcon icon={faHeart} color="red" size="2x" />
             </button>
@@ -146,13 +166,33 @@ const Detail = () => {
               <FontAwesomeIcon icon={faHeart} color="grey" size="2x" />
             </button>
           )}
+
+          <Card.Title className="h2">Comments</Card.Title>
+          <Card.Text className="lead">
+            {comments &&
+              comments.map((comment) => (
+              
+                <div key={comment.id}>
+                <a href={`/users/comment/${comment.user}`}>
+                  <h5>{comment.user}</h5>
+                </a>
+                  <RatingStars rating={comment.rating} />
+                  <p>{comment.review}</p>
+                </div>
+              ))}
+          </Card.Text>
         </Card.Body>
+        <Card.Footer>
+          <small className="text-muted">
+            Last updated {gameDetails.updated_at}
+          </small>
+        </Card.Footer>
       </Card>
     </Container>
   );
 };
+export default Detail;
 
-// Assuming you have a div with id 'detail' in your HTML
 const appDetail = document.getElementById('detail');
 
 render(<Detail />, appDetail);
