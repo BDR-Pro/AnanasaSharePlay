@@ -61,6 +61,9 @@
                         <img class="card-img-top" src="{{ game.image.url }}" alt="{{ game.title }}">
                         <div class="card-body">
                             <h3 class="card-title">{{ game.title }}</h3>
+                            <a href="/game/genre/{{game.genre}}">
+                                <div class="game-genre">{{game.genre}}</div>
+                                </a>
                             <p class="card-text">{{ game.description |slice:":100" }}</p>
                         </div>
                     </div>

@@ -88,10 +88,7 @@ const Profile = () => {
       .then(response => response.json())
       .then(data => {
         setUserInfo(data);
-        const currentuser = window.location.pathname.split('/')[2];
-        const user = window.location.pathname.split('/')[2];
-
-        if (currentuser === user) {
+        if (data.isCurrentUser) {
           setIsCurrentUser(true);
         } else {
           setIsCurrentUser(false);

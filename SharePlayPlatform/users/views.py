@@ -17,12 +17,17 @@ def login_view(request):
             print(request.headers)
             auth = authenticate(username=username, password=password)
             if auth is not None:
+                login(request, auth)
+                print('message Login successful')
                 return JsonResponse({'message': 'Login successful'})
             else:
+                print('message Invalid credentials')
                 return JsonResponse({'message': 'Invalid credentials'}, status=401)
         except json.JSONDecodeError:
+            print('message Invalid JSON data')
             return JsonResponse({'message': 'Invalid JSON data'}, status=400)
     else:
+        print('message Invalid request method')
         return JsonResponse({'message': 'Invalid request method'}, status=400)
 
     

@@ -46,7 +46,8 @@ def profile(request,username):
     return JsonResponse({'username': user.user.username, 'email': email,
                          'nickname': user.nickname, 'avatar': user.avatar.url,
                          'bio': user.bio,
-                         'header': user.header.url,})
+                         'header': user.header.url,"isCurrentUser":
+                             request.user.is_authenticated and request.user.username == username})
 
 
 def updateProfile(request):
@@ -88,3 +89,19 @@ def add(request):
             return JsonResponse({'status': "fail"})
     else:
         return JsonResponse({'status': "Use POST method"})
+    
+    
+def isFav(request,slug):
+    if request.user.is_authenticated and request.method == 'GET' :
+        game=Game.objects.get(slug=slug)
+        user=AuthUser.objects.get(username=request.user.username)
+        user=UserProfile.objects.get(user=user)
+        if user.games.filter(slug=slug).exists():
+            return JsonResponse({'status': "success"})
+        else:
+            return JsonResponse({'status': "fail"})
+        
+    else:
+        return JsonResponse({'status': "Use GET method"})
+    
+    

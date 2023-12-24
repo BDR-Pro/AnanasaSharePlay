@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genre {{ slug }}</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #d5cece;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #ede9e9d2;
+            color: #fff;
+            padding: 1em;
+            text-align: center;
+        }
+
+        .game-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        .game-card {
+            width: 300px;
+            margin: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .game-card:hover {
+            transform: scale(1.05);
+        }
+
+        .game-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .game-details {
+            padding: 16px;
+        }
+
+        .game-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .game-genre {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .game-description {
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        /* Add more styles as needed */
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Genre {{ slug }}</h1>
+</header>
+
+{% for game in games %}
+<a href="/game/{{game.slug}}">
+<div class="game-container">
+    <!-- Example game card -->
+    <div class="game-card">
+        <img src={{game.image.url}} alt={{game.title}} "Image">
+        <div class="game-details">
+            <div class="game-title">{{game.title}}</div>
+            <a href="/game/genre/{{game.genre}}">
+            <div class="game-genre">{{game.genre}}</div>
+            </a>
+            <div class="game-description">{{game.description}}</div>
+        </div>
+    </div>
+</a>
+{% endfor %}
+    <!-- Repeat the game card structure for each game in your list -->
+
+</div>
+
+</body>
+</html>
