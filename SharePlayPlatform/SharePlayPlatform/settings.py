@@ -151,6 +151,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 
+# settings.py
+USE_TZ = True
+
 
 
 CORS_ALLOWED_ORIGINS = [

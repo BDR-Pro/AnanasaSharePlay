@@ -198,7 +198,7 @@ const Detail = () => {
           </a>
           {isAuthenticated && (
             <Button className="btn btn-info">
-              <a href={`/game/${slug}/rent`} style={{ color: 'white', textDecoration: 'none' }}>
+              <a href='listing' style={{ color: 'white', textDecoration: 'none' }}>
                 Rent the game
               </a>
             </Button>

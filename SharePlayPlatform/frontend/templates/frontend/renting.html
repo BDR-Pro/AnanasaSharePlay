@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Form</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .comment-container {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .comment-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            overflow: hidden;
+        }
+
+        .comment-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .italic-text {
+            font-style: italic;
+            font-size: smaller;
+            color: grey;
+        }
+        
+
+        .comment-content {
+            flex: 1;
+            
+            color: inherit; /* Inherit color from the parent (remove default color) */
+            text-decoration: none; /* Remove default underline */
+        }
+        .comment-content a,
+        .comment-content a:hover,
+        .comment-content a:visited {
+            color: inherit; /* Inherit color from the parent (remove default color) */
+            text-decoration: none; /* Remove default underline */
+        }
+        
+
+        
+    </style>
+</head>
+
+<body class="container mt-5">
+
+    <h2>List a Game</h2>
+
+    {% csrf_token %}
+
+    <form method="post" class="mb-5">
+        {% csrf_token %}
+        <div class="form-group">
+
+            <label for="game">Game:</label>
+            <select id="game" name="game" class="form-control" required>
+                <!-- Iterate through game options from context and populate the dropdown -->
+                {% for game in games %}
+                <option value="{{ game.id }}" {% if game.id == mygame.id %} selected {% endif %}>{{ game.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="price_per_hour">Price per Hour:</label>
+            <input type="number" id="price_per_hour" name="price_per_hour" value="{% if avgPrice > 0 %}{{ avgPrice }}{% else %}15{% endif %}" step="1" class="form-control" required min="1">
+        </div>
+
+        <div class="form-group">
+            <label for="start">Start Date and Time:</label>
+            <input type="date" id="start" name="start" class="form-control" required>
+            <select name="start_hour" class="form-control mt-2" required>
+                {% for hour in hours %}
+                <option value="{{ hour }}">Starting Hour {{ hour }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="end">End Date and Time:</label>
+            <input type="date" id="end" name="end" class="form-control" required>
+            <select name="end_hour" class="form-control mt-2" required>
+                {% for hour in hours %}
+                <option value="{{ hour }}">Ending Hour {{ hour }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">List Game</button>
+    </form>
+
+    <h2>Available Games for Rent</h2>
+    {% for listed in listedGames %}
+    <!-- Sample card for an already listed game -->
+    <div class="card mt-3">
+        <div class="card-body comment-container">
+            <a href="/users/{{listed.user}}">
+                <div class="comment-avatar">
+                    <img src="{{listed.avatar}}" alt="Streamer {{listed.nickname}}">
+                </div>
+            <div class="comment-content">
+                <h5 class="card-title">
+                    <span class="italic-text">Streamer</span> {{ listed.nickname }}
+                </h5>
+            </a>
+            
+                <p class="card-text">
+                <span class="italic-text">Price per Hour: </span> ${{listed.price_per_hour}}</p>
+                <p class="card-text">
+                <span class="italic-text">Available from: </span>{{listed.start}}   {{listed.starting_time}} to {{listed.end}}   {{listed.ending_time}}</p>
+                <a href="/your-renting-endpoint" class="btn btn-success" >Rent Game</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Repeat the above card structure for each listed game -->
+
+    <!-- Bootstrap JS and Popper.js (required for Bootstrap components) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

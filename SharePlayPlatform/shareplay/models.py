@@ -35,6 +35,17 @@ class Transaction(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
     is_paid = models.BooleanField(default=False)
+    
+
+class listing(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    price_per_hour = models.DecimalField(max_digits=6, decimal_places=2)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+    starting_time = models.TextField(blank=True, null=True, default='')
+    ending_time = models.TextField(blank=True, null=True, default='')
+    is_available = models.BooleanField(default=True)
 
 
 class Reviews(models.Model):
