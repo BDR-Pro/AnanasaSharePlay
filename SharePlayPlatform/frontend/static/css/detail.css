@@ -32,6 +32,18 @@ body {
   margin-bottom: 10px;
 }
 
+/* Add this to your CSS file or within your component */
+.user-link {
+  color: inherit; /* Use the default text color */
+  text-decoration: none; /* Remove underline */
+}
+
+.user-link:hover {
+  color: #007bff; /* Change color on hover if desired */
+}
+
+
+
 .card-text {
   font-size: 1.2rem;
   margin-top: 10px;

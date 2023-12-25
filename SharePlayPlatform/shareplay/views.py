@@ -4,6 +4,7 @@ from .models import Game, UserProfile, Transaction, Reviews
 from .serializers import GameSerializer, UserSerializer, TransactionSerializer, ReviewsSerializer
 from django.http import JsonResponse
 from django.contrib.auth.models import User as AuthUser
+import json
 from django.shortcuts import get_object_or_404
 
 class Games(generics.CreateAPIView):
@@ -125,3 +126,28 @@ def isFav(request,slug):
         return JsonResponse({'status': "Use GET method"})
     
     
+def addComment(request, game_slug):
+    if request.user.is_authenticated and request.method == 'POST':
+        game = Game.objects.get(slug=game_slug)
+        user = AuthUser.objects.get(username=request.user.username)
+
+        try:
+            data = json.loads(request.body)
+            review_text = data.get('review')
+            rating = data.get('rating')
+            print(data)
+            review = Reviews(user=user, game=game, review=review_text, rating=rating)
+            review.save()
+
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            print(e)
+            return JsonResponse({'status': 'fail'})
+    else:
+        return JsonResponse({'status': 'Use POST method'})
+    
+    
+def getAvatar(request,id):
+    user=AuthUser.objects.get(id=id)
+    user=UserProfile.objects.get(user=user)
+    return JsonResponse({'avatar': user.avatar.url})

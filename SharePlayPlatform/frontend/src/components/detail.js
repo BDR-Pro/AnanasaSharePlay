@@ -1,11 +1,14 @@
+// Detail.js
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
+import Button from 'react-bootstrap/Button'; // Import Button component
 import { render } from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import RatingStars from './RatingStars.js'; 
+import RatingStars from './RatingStars.js';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { getUserNickname } from './utils'; // Import the utility function
 
 const Detail = () => {
   const slug = window.location.pathname.split('/')[2];
@@ -14,6 +17,7 @@ const Detail = () => {
   const [gameDetails, setGameDetails] = useState(null);
   const [error, setError] = useState(null);
   const [comments, setComments] = useState(null);
+  const [userNicknames, setUserNicknames] = useState({});
   const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 
   useEffect(() => {
@@ -91,13 +95,23 @@ const Detail = () => {
     fetchGameDetails();
   }, [slug]);
 
-  if (error) {
-    return <div>{error}</div>;
-  }
+  const fetchUserNicknames = async () => {
+    const newNicknames = {};
+    // Fetch nicknames for each unique user ID in comments
+    await Promise.all(
+      comments.map(async (comment) => {
+        if (!userNicknames[comment.user]) {
+          const nickname = await getUserNickname(comment.user);
+          newNicknames[comment.user] = nickname || comment.user;
+        }
+      })
+    );
+    setUserNicknames((prev) => ({ ...prev, ...newNicknames }));
+  };
 
-  if (!gameDetails) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    fetchUserNicknames();
+  }, [comments]);
 
   const addFav = async () => {
     try {
@@ -133,64 +147,129 @@ const Detail = () => {
     window.location.reload();
   };
 
+  const handleComment = async (e) => {
+    e.preventDefault();
+    const rating = e.target.rating.value;
+    const review = e.target.review.value;
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+      body: JSON.stringify({rating, review }),
+    };
+    const response = await fetch(`/api/addComment/${slug}`, requestOptions);
+    const data = await response.json();
+    data.status === 'success' ? alert('Comment added successfully') : alert('Error adding comment');
+    console.log(data);
+    window.location.reload();
+  };
+
   return (
     <Container className="mt-4">
       <Card>
         <Card.Img
-          variant="top"
-          src={gameDetails.image || 'placeholder-image-url'}
+          variant="top" 
+          src={gameDetails?.image}
           style={{ maxWidth: '30%', height: 'auto' }}
           className="d-flex justify-content-center mx-auto mt-3"
         />
         <Card.Body>
-          <Card.Title className="h2">{gameDetails.title}</Card.Title>
-          <Card.Text className="lead">{gameDetails.description}</Card.Text>
-          <a href={`/game/genre/${gameDetails.genre}`}>
-            <Card.Text className="text-muted">{gameDetails.genre}</Card.Text>
+          <Card.Title className="h2">{gameDetails?.title}</Card.Title>
+          <Card.Text className="lead">{gameDetails?.description}</Card.Text>
+          <a href={`/game/genre/${gameDetails?.genre}`}>
+            <Card.Text className="text-muted">{gameDetails?.genre}</Card.Text>
           </a>
           {isAuthenticated && (
-            <button className="btn btn-info">
-              <a href={`/game/${slug}/rent`}>Rent the game</a>
-            </button>
+            <Button className="btn btn-info">
+              <a href={`/game/${slug}/rent`} style={{ color: 'white', textDecoration: 'none' }}>
+                Rent the game
+              </a>
+            </Button>
           )}
 
           {isAuthenticated && isFav && (
-            <button className="btn btn-success" onClick={removeFav}>
+            <Button
+              className="btn btn-success"
+              onClick={removeFav}
+            >
               Remove from Favorites
-              <FontAwesomeIcon icon={faHeart} color="red" size="2x" />
-            </button>
+              <FontAwesomeIcon icon={faHeart} color="red"  />
+            </Button>
           )}
           {isAuthenticated && !isFav && (
-            <button className="btn btn-info" onClick={addFav}>
+            <Button
+              className="btn btn-info"
+              onClick={addFav}
+            >
               Add to Favorites
-              <FontAwesomeIcon icon={faHeart} color="grey" size="2x" />
-            </button>
+              <FontAwesomeIcon icon={faHeart} color="grey"  />
+            </Button>
           )}
 
-          <Card.Title className="h2">Comments</Card.Title>
+          <Card.Title className="h2" style={{ marginTop: '20px' }}>
+            Comments
+          </Card.Title>
           <Card.Text className="lead">
             {comments &&
               comments.map((comment) => (
-              
-                <div key={comment.id}>
-                <a href={`/users/comment/${comment.user}`}>
-                  <h5>{comment.user}</h5>
-                </a>
-                  <RatingStars rating={comment.rating} />
-                  <p>{comment.review}</p>
-                </div>
+                <Card key={comment.id} style={{ marginTop: '10px' }}>
+                  <Card.Body>
+                    <a href={`/users/comment/${comment.user}`} className="user-link">
+                      <h5>{userNicknames[comment.user]}</h5>
+                    </a>
+                    <RatingStars rating={comment.rating} />
+                    <p>{comment.review}</p>
+                  </Card.Body>
+                </Card>
               ))}
+            {comments && comments.length === 0 && <p>No comments yet.</p>}
+            {isAuthenticated && (
+                <form action={`/api/addComment/${slug}`} method="POST" onSubmit={handleComment}>
+                  <input type="hidden" name="csrfmiddlewaretoken" value={csrfToken} />
+                  <div className="form-group">
+                    <label htmlFor="rating">Rating</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="rating"
+                      name="rating"
+                      min="1"
+                      max="5"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="review">Review</label>
+                    <textarea
+                      className="form-control"
+                      id="review"
+                      name="review"
+                      rows="3"
+                      required
+                    ></textarea>
+                  </div>
+                  <button type="submit" className="btn btn-info">
+                    Submit
+                  </button>
+                </form> 
+            )
+            }
+            {!isAuthenticated && (
+              <p>
+                Please <a href="/login">log in</a> to leave a comment.
+              </p>
+            )}
           </Card.Text>
         </Card.Body>
         <Card.Footer>
           <small className="text-muted">
-            Last updated {gameDetails.updated_at}
+            Last updated {gameDetails?.updated_at}
           </small>
         </Card.Footer>
       </Card>
     </Container>
   );
 };
+
 export default Detail;
 
 const appDetail = document.getElementById('detail');
