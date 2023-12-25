@@ -3,12 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button'; // Import Button component
+import Button from 'react-bootstrap/Button';
 import { render } from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RatingStars from './RatingStars.js';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
-import { getUserNickname } from './utils'; // Import the utility function
+import Avatar from '@material-ui/core/Avatar';
+import { getUserNickname, getAvatarById } from './utils';
 
 const Detail = () => {
   const slug = window.location.pathname.split('/')[2];
@@ -18,6 +19,7 @@ const Detail = () => {
   const [error, setError] = useState(null);
   const [comments, setComments] = useState(null);
   const [userNicknames, setUserNicknames] = useState({});
+  const [userAvatars, setUserAvatars] = useState({});
   const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 
   useEffect(() => {
@@ -35,7 +37,7 @@ const Detail = () => {
       }
     };
 
-    getComments(); // Call the function to fetch comments
+    getComments();
   }, [slug]);
 
   useEffect(() => {
@@ -77,7 +79,6 @@ const Detail = () => {
   }, [slug]);
 
   useEffect(() => {
-    // Fetch game details based on the slug
     const fetchGameDetails = async () => {
       try {
         const response = await fetch(`/api/gamesdetail/${slug}/`);
@@ -97,7 +98,6 @@ const Detail = () => {
 
   const fetchUserNicknames = async () => {
     const newNicknames = {};
-    // Fetch nicknames for each unique user ID in comments
     await Promise.all(
       comments.map(async (comment) => {
         if (!userNicknames[comment.user]) {
@@ -111,6 +111,24 @@ const Detail = () => {
 
   useEffect(() => {
     fetchUserNicknames();
+  }, [comments]);
+
+  const fetchUserAvatars = async () => {
+    const newAvatars = {};
+    await Promise.all(
+      comments.map(async (comment) => {
+        if (!userAvatars[comment.user]) {
+          const avatarId = comment.user; // Adjust this line based on how the user ID is represented
+          const avatar = await getAvatarById(avatarId);
+          newAvatars[comment.user] = avatar || '/default-avatar.jpg';
+        }
+      })
+    );
+    setUserAvatars((prev) => ({ ...prev, ...newAvatars }));
+  };
+
+  useEffect(() => {
+    fetchUserAvatars();
   }, [comments]);
 
   const addFav = async () => {
@@ -154,7 +172,7 @@ const Detail = () => {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-      body: JSON.stringify({rating, review }),
+      body: JSON.stringify({ rating, review }),
     };
     const response = await fetch(`/api/addComment/${slug}`, requestOptions);
     const data = await response.json();
@@ -167,7 +185,7 @@ const Detail = () => {
     <Container className="mt-4">
       <Card>
         <Card.Img
-          variant="top" 
+          variant="top"
           src={gameDetails?.image}
           style={{ maxWidth: '30%', height: 'auto' }}
           className="d-flex justify-content-center mx-auto mt-3"
@@ -187,21 +205,15 @@ const Detail = () => {
           )}
 
           {isAuthenticated && isFav && (
-            <Button
-              className="btn btn-success"
-              onClick={removeFav}
-            >
+            <Button className="btn btn-success" onClick={removeFav}>
               Remove from Favorites
-              <FontAwesomeIcon icon={faHeart} color="red"  />
+              <FontAwesomeIcon icon={faHeart} color="red" />
             </Button>
           )}
           {isAuthenticated && !isFav && (
-            <Button
-              className="btn btn-info"
-              onClick={addFav}
-            >
+            <Button className="btn btn-info" onClick={addFav}>
               Add to Favorites
-              <FontAwesomeIcon icon={faHeart} color="grey"  />
+              <FontAwesomeIcon icon={faHeart} color="grey" />
             </Button>
           )}
 
@@ -213,8 +225,14 @@ const Detail = () => {
               comments.map((comment) => (
                 <Card key={comment.id} style={{ marginTop: '10px' }}>
                   <Card.Body>
-                    <a href={`/users/comment/${comment.user}`} className="user-link">
-                      <h5>{userNicknames[comment.user]}</h5>
+                  <a href={`/users/comment/${comment.user}`} className="user-link">
+                    <Avatar
+                      alt={userNicknames[comment.user]}
+                      src={userAvatars[comment.user]}
+                      style={{ marginRight: '10px' }}
+                    />
+                  
+                      <h6>{userNicknames[comment.user]}</h6>
                     </a>
                     <RatingStars rating={comment.rating} />
                     <p>{comment.review}</p>
@@ -223,36 +241,35 @@ const Detail = () => {
               ))}
             {comments && comments.length === 0 && <p>No comments yet.</p>}
             {isAuthenticated && (
-                <form action={`/api/addComment/${slug}`} method="POST" onSubmit={handleComment}>
-                  <input type="hidden" name="csrfmiddlewaretoken" value={csrfToken} />
-                  <div className="form-group">
-                    <label htmlFor="rating">Rating</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      id="rating"
-                      name="rating"
-                      min="1"
-                      max="5"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="review">Review</label>
-                    <textarea
-                      className="form-control"
-                      id="review"
-                      name="review"
-                      rows="3"
-                      required
-                    ></textarea>
-                  </div>
-                  <button type="submit" className="btn btn-info">
-                    Submit
-                  </button>
-                </form> 
-            )
-            }
+              <form action={`/api/addComment/${slug}`} method="POST" onSubmit={handleComment}>
+                <input type="hidden" name="csrfmiddlewaretoken" value={csrfToken} />
+                <div className="form-group">
+                  <label htmlFor="rating">Rating</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="rating"
+                    name="rating"
+                    min="1"
+                    max="5"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="review">Review</label>
+                  <textarea
+                    className="form-control"
+                    id="review"
+                    name="review"
+                    rows="3"
+                    required
+                  ></textarea>
+                </div>
+                <button type="submit" className="btn btn-info">
+                  Submit
+                </button>
+              </form>
+            )}
             {!isAuthenticated && (
               <p>
                 Please <a href="/login">log in</a> to leave a comment.

@@ -15,3 +15,19 @@ export const getUserNickname = async (userId) => {
     }
   };
   
+
+export const getAvatarById = async (userId) => {
+    try {
+        const response = await fetch(`/api/getAvatar/${userId}`);
+        if (response.ok) {
+        const data = await response.json();
+        return data.avatar;
+        } else {
+        console.error('Error fetching user nickname:', response);
+        return null;
+        }
+    } catch (error) {
+        console.error('Error fetching user nickname:', error);
+        return null;
+    }
+    }

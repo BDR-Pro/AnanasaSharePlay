@@ -150,4 +150,5 @@ def addComment(request, game_slug):
 def getAvatar(request,id):
     user=AuthUser.objects.get(id=id)
     user=UserProfile.objects.get(user=user)
+    print(user.avatar.url)
     return JsonResponse({'avatar': user.avatar.url})
