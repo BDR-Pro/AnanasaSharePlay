@@ -119,7 +119,7 @@
                 <span class="italic-text">Price per Hour: </span> ${{listed.price_per_hour}}</p>
                 <p class="card-text">
                 <span class="italic-text">Available from: </span>{{listed.start}}   {{listed.starting_time}} to {{listed.end}}   {{listed.ending_time}}</p>
-                <a href="/your-renting-endpoint" class="btn btn-success" >Rent Game</a>
+                <a href="/rent-your-game/{{listed.id}}" class="btn btn-success" >Rent Game</a>
             </div>
         </div>
     </div>
@@ -132,5 +132,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
+<script>
+    // Set the default value of the date input to today's date
+    document.getElementById('start').min = new Date().toISOString().split('T')[0];
+    document.getElementById('end').min = new Date().toISOString().split('T')[0];
+
+  </script>
+
+
 
 </html>

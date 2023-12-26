@@ -1,11 +1,20 @@
 from django.shortcuts import render, redirect
-from shareplay.models import Game , UserProfile , listing
+from shareplay.models import Game , UserProfile , Listing, Transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from urllib.parse import unquote
-from datetime import datetime, timezone
-
 from django.db.models import Avg
+from datetime import datetime, timezone
+from django.db.models import Avg
+from .utils import is_time_range_available, mark_time_range_unavailable
+from django.core.exceptions import PermissionDenied
+from django.utils.timezone import make_aware
+from django.utils import timezone
+from datetime import datetime
+
+
+
+
 
 # Create your views here.
 def index(request, *args, **kwargs):
@@ -74,13 +83,20 @@ def renting(request, slug):
         if request.method == 'GET':
             game = get_object_or_404(Game, slug=slug)
             games = Game.objects.all()
-            listed = listing.objects.filter(game=game, is_available=True, start__gt=datetime.now(timezone.utc))
-            listed = sorted(listed, key=lambda x: x.start)
+            listed = Listing.objects.filter(game=game)
+            print(listed)
+            print("before-------filter") 
+            listed = Listing.objects.filter(game=game, end__gte=datetime.now(timezone.utc))
+            print(listed)
             
+            print("before sorted")
+            listed = sorted(listed, key=lambda x: x.start)
+            print(listed)            
             listed_games = []
             for item in listed:
                 user_profile = UserProfile.objects.get(user_id=item.user_id)
                 listed_games.append({
+                    'id': item.id,
                     'game_title': game.title,
                     'price_per_hour': item.price_per_hour,
                     'start': item.start.date(),
@@ -93,7 +109,7 @@ def renting(request, slug):
                     'nickname': user_profile.nickname,
                 })
 
-            avg_price = listing.objects.filter(game=game).aggregate(Avg('price_per_hour'))
+            avg_price = Listing.objects.filter(game=game).aggregate(Avg('price_per_hour'))
             hours = [f"{i:02d}:00" for i in range(24)]
             
             return render(request, 'frontend/renting.html', {
@@ -117,10 +133,57 @@ def renting(request, slug):
             end_hour	"12:00"
             
             '''
+            msg=''
+            if request.POST['start'] > request.POST['end']:
+                msg='Start date must be before end date'
+                return redirect(link, msg=msg)
+            if request.POST['start'] == request.POST['end']:
+                if request.POST['start_hour'] > request.POST['end_hour']:
+                    msg='Start time must be before end time'
+                    return redirect(link, msg=msg)
+            if request.POST['start'] == request.POST['end']:
+                if request.POST['start_hour'] == request.POST['end_hour']:
+                    msg='Start time must be before end time'
+                    return redirect(link, msg=msg)
+            if request.POST['price_per_hour'] == '':
+                msg='Price per hour must be filled'
+                return redirect(link, msg=msg)
+            if request.POST['start'] == '':
+                msg='Start date must be filled'
+                return redirect(link, msg=msg)
+            if request.POST['end'] == '':
+                msg='End date must be filled'
+                return redirect(link, msg=msg)
+            if request.POST['start_hour'] == '':
+                msg='Start time must be filled'
+                return redirect(link, msg=msg)
+            if request.POST['end_hour'] == '':
+                msg='End time must be filled'
+                return redirect(link, msg=msg)
             
-            listed=listing.objects.create(user=request.user,game=game,price_per_hour=request.POST['price_per_hour'],
-                                          start=request.POST['start'],end=request.POST['end'],
-                                          starting_time=request.POST['start_hour'],ending_time=request.POST['end_hour'])
+            
+            current_date = datetime.now(timezone.utc).date()
+            start_hour = request.POST['start_hour']
+            end_hour = request.POST['end_hour']
+            # Construct start and end datetime objects using the current date and selected hours
+            start_datetime = timezone.make_aware(datetime.combine(current_date, datetime.strptime(start_hour, '%H:%M').time()))
+            end_datetime = timezone.make_aware(datetime.combine(current_date, datetime.strptime(end_hour, '%H:%M').time()))
+            print(start_datetime)
+            print(end_datetime)
+            
+            # Create the Listing object
+            listed = Listing.objects.create(
+                user=request.user,
+                game=game,
+                price_per_hour=request.POST['price_per_hour'],
+                start=start_datetime,
+                end=end_datetime,
+                starting_time=start_hour,
+                ending_time=end_hour
+            )
+            
+            print(listed)
+
             user = get_object_or_404(UserProfile, user=request.user)
             # Assuming you have the User instance as user and the game and listed instances
             # game and listed should be instances of the Game and Listing models, respectively
@@ -141,3 +204,47 @@ def renting(request, slug):
         
     else:
         return redirect('/login')
+
+
+
+def RentYourGame(request, id):
+    if request.user.is_authenticated:
+        if request.method == 'GET':
+            listed = get_object_or_404(Listing, id=id)
+            streamer = get_object_or_404(UserProfile, user=listed.user)
+            game = get_object_or_404(Game, id=listed.game.id)
+            hours = [f"{i:02d}:00" for i in range(24)]
+            avgPrice = Listing.objects.filter(game=game).aggregate(Avg('price_per_hour'))['price_per_hour__avg']
+            return render(request, 'frontend/rent-your-game.html', {"listed": listed, "streamer": streamer, "game": game,
+                                                                    "hours": hours, "avgPrice": avgPrice})
+
+        if request.method == 'POST':
+            listed = get_object_or_404(Listing, id=id)
+
+            # Assuming your form includes a field 'selected_start' and 'selected_end' representing the selected time range
+            selected_start = request.POST.get('selected_start')
+            selected_end = selected_start 
+            start_hour = request.POST.get('start_hour')
+            end_hour = request.POST.get('end_hour')
+            print(request.POST)
+
+            if is_time_range_available(listed, selected_start, selected_end):
+                mark_time_range_unavailable(listed, selected_start, selected_end)
+                print(listed.user)
+                print(request.user)
+                print(listed.game)                
+                
+                initTransaction = Transaction.objects.create(
+                    user=listed.user,
+                    rented_user=request.user,
+                    game=listed.game,
+                    price_per_hour=listed.price_per_hour,
+                    start=selected_start,
+                    start_hour=start_hour,  
+                    end_hour=end_hour      
+                )
+                return redirect('/Profile/rents')
+            else:
+                raise PermissionDenied  # Raise PermissionDenied instead of 403
+            
+            
