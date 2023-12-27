@@ -10,8 +10,9 @@ class Game(models.Model):
     genre = models.CharField(max_length=255, blank=True, null=True, default='')
     description = models.TextField()
     image = models.ImageField(upload_to='images/')
-    owner = models.JSONField(blank=True, null=True)  # JSONField is a dictionary <owner:PricePerHour>
+    owners = models.ManyToManyField(User, blank=True, related_name='owners', default=5)
     updated_at = models.DateTimeField(auto_now=True)
+    views = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title
@@ -39,6 +40,10 @@ class Transaction(models.Model):
     start_hour = models.TimeField(default=datetime.datetime.now)
     end_hour = models.TimeField(default=datetime.datetime.now)
     is_paid = models.BooleanField(default=False)
+    invoiceId= models.CharField(max_length=255, blank=True, null=True, default='')
+    
+    def __str__(self) -> str:
+        return f"{self.user.username} - {self.game.title} - {self.price_per_hour} - {self.start_date} - {self.start_hour} - {self.end_hour} - {self.is_paid}"
      
 
 

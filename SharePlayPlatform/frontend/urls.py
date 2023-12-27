@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import index , detail, login, register, search,Profile,MyGames,genre,pay,renting,RentYourGame,rents
+from .views import index , detail, login, register, search,Profile,MyGames,genre,pay,renting,RentYourGame,rents,check_invoice_payment_status
 
 app_name = 'frontend'
 
@@ -17,5 +17,6 @@ urlpatterns = [
     path('login/', login),
     path('register/', register),
     path('pay/<randomNumber>',pay,name='pay'),
-    path('Profile',Profile)
+    path('Profile',Profile),
+    path('NewInvoice',check_invoice_payment_status,name='NewInvoice')
 ]

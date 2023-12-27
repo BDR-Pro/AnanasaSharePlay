@@ -1,6 +1,5 @@
 // Detail.js
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -8,10 +7,11 @@ import { render } from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RatingStars from './RatingStars.js';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import Badge from 'react-bootstrap/Badge';
 import Avatar from '@material-ui/core/Avatar';
 import { getUserNickname, getAvatarById } from './utils';
 
-const Detail = () => {
+const Detail = ({ context }) => {
   const slug = window.location.pathname.split('/')[2];
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isFav, setIsFav] = useState(false);
@@ -181,6 +181,8 @@ const Detail = () => {
     window.location.reload();
   };
 
+  console.log(context)
+
   return (
     <Container className="mt-4">
       <Card>
@@ -196,6 +198,32 @@ const Detail = () => {
           <a href={`/game/genre/${gameDetails?.genre}`}>
             <Card.Text className="text-muted">{gameDetails?.genre}</Card.Text>
           </a>
+          <div className="mt-3">
+            <Badge variant="primary" className="mr-2">
+              Views: {context.views}
+            </Badge>
+            <Badge variant="success" className="mr-2">
+              Renters: {context.NumberOfRenters}
+            </Badge>
+            <Badge variant="danger" className="mr-2">
+              Favorites: {context.NumberOfFavorites}
+            </Badge>
+            <Badge variant="warning" className="mr-2">
+              Streamers: {context.NumberOfStreamers}
+            </Badge>
+            <Badge variant="info">
+              Owners: {context.NumberOfOwners}
+            </Badge>
+            <Badge variant="info">
+              Comments: {context.NumberOfComments}
+            </Badge>
+            
+            <Badge variant="info">
+            <RatingStars rating={context.AvgRating} /> {context.AvgRating}
+            </Badge>
+          </div>
+          <p></p>
+
           {isAuthenticated && (
             <Button className="btn btn-info">
               <a href='listing' style={{ color: 'white', textDecoration: 'none' }}>
@@ -225,13 +253,12 @@ const Detail = () => {
               comments.map((comment) => (
                 <Card key={comment.id} style={{ marginTop: '10px' }}>
                   <Card.Body>
-                  <a href={`/users/comment/${comment.user}`} className="user-link">
-                    <Avatar
-                      alt={userNicknames[comment.user]}
-                      src={userAvatars[comment.user]}
-                      style={{ marginRight: '10px' }}
-                    />
-                  
+                    <a href={`/users/comment/${comment.user}`} className="user-link">
+                      <Avatar
+                        alt={userNicknames[comment.user]}
+                        src={userAvatars[comment.user]}
+                        style={{ marginRight: '10px' }}
+                      />
                       <h6>{userNicknames[comment.user]}</h6>
                     </a>
                     <RatingStars rating={comment.rating} />
@@ -290,5 +317,9 @@ const Detail = () => {
 export default Detail;
 
 const appDetail = document.getElementById('detail');
+document.addEventListener('DOMContentLoaded', function(){
+const contextData = JSON.parse(document.getElementById('context').textContent);
+render(<Detail context={contextData} />, appDetail);
 
-render(<Detail />, appDetail);
+});
+

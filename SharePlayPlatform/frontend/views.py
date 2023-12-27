@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from shareplay.models import Game , UserProfile , Listing, Transaction
+from shareplay.models import Game , UserProfile , Listing, Transaction , Reviews
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from urllib.parse import unquote
@@ -12,6 +12,7 @@ from django.utils import timezone
 from datetime import datetime
 from django.conf import settings
 import stripe
+from django.core.serializers import serialize
 
 
 
@@ -39,7 +40,29 @@ def detail(request,slug):
             return redirect('/login')
     if request.method == 'GET':    
         game = get_object_or_404(Game, slug=slug)
-    return render(request, 'frontend/detail.html',{"game": game})
+        NumberOfRenters=Transaction.objects.filter(game=game).count()
+        NumberOfFavorites=UserProfile.objects.filter(games=game).count()
+        NumberOfStreamers=Listing.objects.filter(game=game).count()
+        NumberOfOwners=game.owners.count()
+        game.views += 1
+        views=game.views
+        NumberOfComments=Reviews.objects.filter(game=game).count()
+        AvgRating=Reviews.objects.filter(game=game).aggregate(Avg('rating'))['rating__avg']
+        game = serialize('json', [game])
+        context = {
+            "game": game,
+            "views": views,
+            "NumberOfRenters": NumberOfRenters,
+            "NumberOfFavorites": NumberOfFavorites,
+            "NumberOfStreamers": NumberOfStreamers,
+            "NumberOfOwners": NumberOfOwners,
+            "NumberOfComments": NumberOfComments,
+            "AvgRating": AvgRating,
+            
+        }
+        print("context")
+        print(context)
+    return render(request, 'frontend/detail.html',{"context":context})
 
 def login(request, *args, **kwargs):
     return render(request, 'frontend/login.html')
@@ -271,21 +294,6 @@ class Listing(models.Model):
     
     
     
-    '''
-    
-    
-class Transaction(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_transactions')
-    rented_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rented_transactions')
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    price_per_hour = models.DecimalField(max_digits=6, decimal_places=2)
-    start_date= models.DateField(default=datetime.date.today)
-    start_hour = models.TimeField(default=datetime.datetime.now)
-    end_hour = models.TimeField(default=datetime.datetime.now)
-    is_paid = models.BooleanField(default=False)
-     
-    
-    '''
 
     # Query transactions for the same user, game, and date
     overlapping_transactions = Transaction.objects.filter(
@@ -323,7 +331,6 @@ from decimal import Decimal
 def pay(request, randomNumber):
     if request.user.is_authenticated:
         transaction = get_object_or_404(Transaction, randomNumber=randomNumber)
-
         # Calculate the number of hours
         start_datetime = datetime.combine(transaction.start_date, transaction.start_hour)
         end_datetime = datetime.combine(transaction.start_date, transaction.end_hour)
@@ -331,7 +338,8 @@ def pay(request, randomNumber):
         number_of_hours = time_difference.total_seconds() / 3600
         # Convert number_of_hours to Decimal
         number_of_hours = Decimal(str(number_of_hours))
-
+        if number_of_hours < 1:
+            number_of_hours = 1
         # Set your secret key
         stripe.api_key = settings.STRIPE_SECRET_KEY
         pricetag=int(transaction.price_per_hour * number_of_hours * 100)
@@ -348,10 +356,24 @@ def pay(request, randomNumber):
             client_secret = payment_intent.client_secret
 
             # Save the transaction after successful payment
-            transaction.is_paid = True
             transaction.save()
+            pricetag=float(pricetag)
+            pricetag=pricetag/100
+            pricetag = "{:.2f}".format(pricetag)
+            context = {
+                
+                    'client_secret': client_secret,
+                    'total_amount': pricetag,
+                    'game_title': transaction.game.title,
+                    'start_date': transaction.start_date,
+                    'start_hour': transaction.start_hour,
+                    'end_hour': transaction.end_hour,
+                    'price_per_hour': transaction.price_per_hour,
+                    'random_number': transaction.randomNumber,
+                }
 
-            return render(request, 'frontend/payment.html', {'client_secret': client_secret , "total_amount":pricetag})
+            
+            return render(request, 'frontend/payment.html', context)
         except stripe.error.CardError as e:
             # Handle card errors
             error_msg = str(e.error)
@@ -362,3 +384,25 @@ def pay(request, randomNumber):
             return render(request, 'frontend/payment.html', {'error_msg': error_msg})
     else:
         return redirect('/login')
+
+
+
+def check_invoice_payment_status(request):
+    try:
+        invoiceId = request.POST.get('invoiceId')
+        transactionId = request.POST.get('transactionId')
+        Transaction = get_object_or_404(Transaction, id=transactionId)
+        invoice = stripe.Invoice.retrieve(invoiceId)
+        Transaction.invoiceId = invoiceId
+        print(request.POST)
+        if invoice.payment_status == 'paid':
+            Transaction.is_paid = True
+            return True
+        else:
+            return False
+
+    except stripe.error.StripeError as e:
+        # Handle any Stripe API errors
+        print(f"Stripe error: {e}")
+        return False
+    

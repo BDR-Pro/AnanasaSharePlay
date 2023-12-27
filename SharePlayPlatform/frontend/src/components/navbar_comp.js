@@ -71,7 +71,7 @@ function NavbarComponent() {
                     id={`offcanvasNavbarDropdown-expand-${expand}`}
                   >
                     <NavDropdown.Item href="/MyGames">My Games</NavDropdown.Item>
-                    <NavDropdown.Item href="/profile/rents">
+                    <NavDropdown.Item href="/Profile/rents">
                       My Rents
                     </NavDropdown.Item>
                     <NavDropdown.Divider />

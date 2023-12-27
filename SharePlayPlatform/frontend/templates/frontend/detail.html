@@ -17,6 +17,7 @@
     {% csrf_token %} 
     <div id="navbar"></div>
   <div id="detail" data-slug="{{ game.slug }}"></div>
+  
   </div>
   <!-- Load React and ReactDOM libraries -->
   <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
@@ -30,6 +31,7 @@
   <script src="{% static "frontend/compileddetail.js" %}"></script>
   <script src="{% static "frontend/navbar.js" %}"></script>
 
+  {{ context|json_script:"context" }}
 
 
 

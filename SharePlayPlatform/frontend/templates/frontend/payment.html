@@ -10,11 +10,14 @@
     <style>
         body {
             background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
         }
 
         .container {
-            max-width: 800px;
-            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
         #payment-card {
@@ -25,13 +28,25 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        #card-element {
+        #card-element-container {
             margin-bottom: 20px;
+        }
+
+        #card-element {
+            height: 40px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
 
         #error-alert {
             display: none;
             margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            color: #721c24;
         }
 
         #submit {
@@ -43,26 +58,54 @@
             cursor: pointer;
         }
 
+        #submit:hover {
+            background-color: #0056b3;
+        }
+
         #price {
             font-size: 1.5em;
             margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        #transaction-details {
+            margin-bottom: 20px;
+        }
+
+        #transaction-details p {
+            margin: 5px 0;
         }
     </style>
 </head>
 <body>
 
-    <div class="container mt-5">
+    <div class="container">
         <div id="payment-card">
-            <h2>Payment</h2>
+            <h2>Payment for {{ game_title }}</h2>
 
+            <!-- Display error message if payment fails -->
             <div id="error-alert" class="alert alert-danger" role="alert"></div>
 
+            <!-- Display transaction details -->
+            <div id="transaction-details">
+                <p>Start Date: {{ start_date }}</p>
+                <p>Start Hour: {{ start_hour }}</p>
+                <p>End Hour: {{ end_hour }}</p>
+                <p>Price Per Hour: ${{ price_per_hour }}</p>
+                <p>Random Number: {{ random_number }}</p>
+            </div>
+
+            <!-- Display total amount to be paid -->
             <p id="price">Total Amount: ${{ total_amount }}</p>
 
             <form id="payment-form">
                 <!-- Add your payment form fields here -->
-                <div id="card-element"></div>
+                <div id="card-element-container">
+                    <label for="card-element">Credit or debit card</label>
+                    <div id="card-element"></div>
+                </div>
 
+                <!-- Button to initiate payment -->
                 <button id="submit" class="btn btn-primary">Pay Now</button>
             </form>
         </div>
@@ -72,18 +115,22 @@
     <script src="https://js.stripe.com/v3/"></script>
 
     <script>
+        // Initialize Stripe with your public key
         var stripe = Stripe('pk_test_51ORuYjJY68BZPibPDIyHO3ZbZThD2aHzkU2NMtcWh2VISDl97CBEmQZPCDKyTo43y7bJbZbUFAKnVe6X3O88UZHO006iN9m63k');
         var elements = stripe.elements();
 
+        // Create a card element and mount it to the DOM
         var card = elements.create('card');
         card.mount('#card-element');
 
         var form = document.getElementById('payment-form');
         var errorElement = document.getElementById('error-alert');
 
+        // Handle form submission
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
+            // Confirm card payment with the provided client secret
             stripe.confirmCardPayment(
                 '{{ client_secret }}',
                 {
@@ -92,11 +139,44 @@
                     },
                 }
             ).then(function (result) {
+                console.log(result); // Log the entire result object
+
+                var transactionId = null;
+                var invoiceId = null;
+
+                // Check if paymentIntent exists in the result
+                if (result.paymentIntent) {
+                    transactionId = result.paymentIntent.id;
+                    invoiceId = result.paymentIntent.invoice;
+                }
+
+                // Log relevant information
+                console.log("client_secret:", '{{ client_secret }}');
+                console.log("transactionId:", transactionId);
+                console.log("invoiceId:", invoiceId);
+
+                // Display error message if payment fails
                 if (result.error) {
                     errorElement.textContent = result.error.message;
                     errorElement.style.display = 'block';
                 } else {
-                    if (result.paymentIntent.status === 'succeeded') {
+                    // Check if paymentIntent status is succeeded
+                    if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
+                        // Payment succeeded, send data to server
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", "/NewInvoice", true);
+                        xhr.setRequestHeader("Content-Type", "application/json");
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                console.log("Data sent successfully");
+                            }
+                        };
+                        var data = JSON.stringify({
+                            transactionId: transactionId,
+                            invoiceId: invoiceId
+                        });
+                        xhr.send(data);
+
                         // Redirect or perform additional actions
                         window.location.href = '/profile/rents';
                     }
