@@ -1,0 +1,114 @@
+<!-- payment.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        #payment-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #card-element {
+            margin-bottom: 20px;
+        }
+
+        #error-alert {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        #submit {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #price {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+        <div id="payment-card">
+            <h2>Payment</h2>
+
+            <div id="error-alert" class="alert alert-danger" role="alert"></div>
+
+            <p id="price">Total Amount: ${{ total_amount }}</p>
+
+            <form id="payment-form">
+                <!-- Add your payment form fields here -->
+                <div id="card-element"></div>
+
+                <button id="submit" class="btn btn-primary">Pay Now</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <script>
+        var stripe = Stripe('pk_test_51ORuYjJY68BZPibPDIyHO3ZbZThD2aHzkU2NMtcWh2VISDl97CBEmQZPCDKyTo43y7bJbZbUFAKnVe6X3O88UZHO006iN9m63k');
+        var elements = stripe.elements();
+
+        var card = elements.create('card');
+        card.mount('#card-element');
+
+        var form = document.getElementById('payment-form');
+        var errorElement = document.getElementById('error-alert');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            stripe.confirmCardPayment(
+                '{{ client_secret }}',
+                {
+                    payment_method: {
+                        card: card,
+                    },
+                }
+            ).then(function (result) {
+                if (result.error) {
+                    errorElement.textContent = result.error.message;
+                    errorElement.style.display = 'block';
+                } else {
+                    if (result.paymentIntent.status === 'succeeded') {
+                        // Redirect or perform additional actions
+                        window.location.href = '/profile/rents';
+                    }
+                }
+            });
+        });
+    </script>
+
+    <!-- Bootstrap JS and Popper.js (required for Bootstrap components) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

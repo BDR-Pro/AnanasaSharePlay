@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Rents</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Your custom CSS styles can be added here -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #dee2e6;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 10px;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+
+        .no-rents {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <h2>Your Rents</h2>
+
+        {% if transactions %}
+            {% for transaction in transactions %}
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{% url 'frontend:game_detail' transaction.game.slug %}">
+                        <h5 class="card-title">{{ transaction.game.title }}</h5>
+                        </a>
+                        <p></p>
+                        <a href="{% url 'frontend:genre' transaction.game.genre %}">
+                        <p class="card-text">Genre: {{ transaction.game.genre }}</p>
+                        </a>
+                        <p></p>
+                        <p class="card-text">Price Per Hour: ${{ transaction.price_per_hour }}</p>
+                        <p class="card-text">Start Date: {{ transaction.start_date }}</p>
+                        <p class="card-text">Start Time: {{ transaction.start_hour|time:"H:i" }}</p>
+                        <p class="card-text">End Time: {{ transaction.end_hour|time:"H:i" }}</p>
+                        <p class="card-text">
+                            {% if transaction.is_paid %}
+                                Paid
+                            {% else %}
+                            <a href="{% url 'frontend:pay' transaction.randomNumber  %}" class="btn btn-primary">Pay</a>
+                                Not Paid
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-rents">You haven't rented any games yet.</p>
+        {% endif %}
+
+    </div>
+
+    <!-- Bootstrap JS and Popper.js (required for Bootstrap components) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

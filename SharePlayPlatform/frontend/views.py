@@ -6,13 +6,12 @@ from urllib.parse import unquote
 from django.db.models import Avg
 from datetime import datetime, timezone
 from django.db.models import Avg
-from .utils import is_time_range_available, mark_time_range_unavailable
 from django.core.exceptions import PermissionDenied
 from django.utils.timezone import make_aware
 from django.utils import timezone
 from datetime import datetime
-
-
+from django.conf import settings
+import stripe
 
 
 
@@ -103,22 +102,21 @@ def renting(request, slug):
                     'end': item.end.date(),
                     'starting_time': item.starting_time,
                     'ending_time': item.ending_time,
-                    'is_available': item.is_available,
                     'user':item.user,
                     'avatar': user_profile.avatar.url,
                     'nickname': user_profile.nickname,
                 })
 
             avg_price = Listing.objects.filter(game=game).aggregate(Avg('price_per_hour'))
-            hours = [f"{i:02d}:00" for i in range(24)]
-            
+
+
             return render(request, 'frontend/renting.html', {
                 "slug": slug,
                 "mygame": game,
                 "listedGames": listed_games,
                 "games": games,
                 "avgPrice": avg_price,
-                "hours": hours,
+           
             })
             
         if request.method == 'POST':
@@ -128,43 +126,16 @@ def renting(request, slug):
             game	"2"
             price_per_hour	"15"
             start	"2023-12-25"
-            start_hour	"01:00"
+            starting_hour	"01:00"
             end	"2024-01-03"
-            end_hour	"12:00"
+            ending_hour	"12:00"
             
             '''
-            msg=''
-            if request.POST['start'] > request.POST['end']:
-                msg='Start date must be before end date'
-                return redirect(link, msg=msg)
-            if request.POST['start'] == request.POST['end']:
-                if request.POST['start_hour'] > request.POST['end_hour']:
-                    msg='Start time must be before end time'
-                    return redirect(link, msg=msg)
-            if request.POST['start'] == request.POST['end']:
-                if request.POST['start_hour'] == request.POST['end_hour']:
-                    msg='Start time must be before end time'
-                    return redirect(link, msg=msg)
-            if request.POST['price_per_hour'] == '':
-                msg='Price per hour must be filled'
-                return redirect(link, msg=msg)
-            if request.POST['start'] == '':
-                msg='Start date must be filled'
-                return redirect(link, msg=msg)
-            if request.POST['end'] == '':
-                msg='End date must be filled'
-                return redirect(link, msg=msg)
-            if request.POST['start_hour'] == '':
-                msg='Start time must be filled'
-                return redirect(link, msg=msg)
-            if request.POST['end_hour'] == '':
-                msg='End time must be filled'
-                return redirect(link, msg=msg)
-            
+
             
             current_date = datetime.now(timezone.utc).date()
-            start_hour = request.POST['start_hour']
-            end_hour = request.POST['end_hour']
+            start_hour = request.POST['starting_hour']
+            end_hour = request.POST['ending_hour']
             # Construct start and end datetime objects using the current date and selected hours
             start_datetime = timezone.make_aware(datetime.combine(current_date, datetime.strptime(start_hour, '%H:%M').time()))
             end_datetime = timezone.make_aware(datetime.combine(current_date, datetime.strptime(end_hour, '%H:%M').time()))
@@ -213,38 +184,181 @@ def RentYourGame(request, id):
             listed = get_object_or_404(Listing, id=id)
             streamer = get_object_or_404(UserProfile, user=listed.user)
             game = get_object_or_404(Game, id=listed.game.id)
-            hours = [f"{i:02d}:00" for i in range(24)]
             avgPrice = Listing.objects.filter(game=game).aggregate(Avg('price_per_hour'))['price_per_hour__avg']
             return render(request, 'frontend/rent-your-game.html', {"listed": listed, "streamer": streamer, "game": game,
-                                                                    "hours": hours, "avgPrice": avgPrice})
+                                                                "avgPrice": avgPrice})
 
         if request.method == 'POST':
             listed = get_object_or_404(Listing, id=id)
 
             # Assuming your form includes a field 'selected_start' and 'selected_end' representing the selected time range
             selected_start = request.POST.get('selected_start')
-            selected_end = selected_start 
-            start_hour = request.POST.get('start_hour')
-            end_hour = request.POST.get('end_hour')
+            start_hour = request.POST.get('start')
+            end_hour = request.POST.get('end')
             print(request.POST)
 
-            if is_time_range_available(listed, selected_start, selected_end):
-                mark_time_range_unavailable(listed, selected_start, selected_end)
+            if is_time_range_available(listed, selected_start,start_time=start_hour, end_time=end_hour):
                 print(listed.user)
                 print(request.user)
                 print(listed.game)                
+                '''
                 
+class Transaction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_transactions')
+    rented_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rented_transactions')
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    price_per_hour = models.DecimalField(max_digits=6, decimal_places=2)
+    start = models.DateTimeField()
+    end = models.DateTimeField(default=datetime.datetime.now)
+    is_paid = models.BooleanField(default=False)
+     
+     
+                
+                '''
                 initTransaction = Transaction.objects.create(
                     user=listed.user,
                     rented_user=request.user,
                     game=listed.game,
                     price_per_hour=listed.price_per_hour,
-                    start=selected_start,
+                    start_date=selected_start,
                     start_hour=start_hour,  
                     end_hour=end_hour      
                 )
                 return redirect('/Profile/rents')
             else:
-                raise PermissionDenied  # Raise PermissionDenied instead of 403
-            
-            
+                raise PermissionDenied  
+
+def is_time_range_available(listed: Listing,startDate, start_time, end_time):
+    # Combine the start_date with start_time and end_time to create datetime objects
+    '''
+    
+
+class Listing(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    price_per_hour = models.DecimalField(max_digits=6, decimal_places=2)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+    starting_time = models.TimeField(blank=True, null=True, default='')
+    ending_time = models.TimeField(blank=True, null=True, default='')
+    
+    '''
+    print("is_time_range_available")
+    print(listed)
+    print("start_date")
+    print(startDate)
+    print("start_time")
+    print(start_time)
+    print("end_time")
+    print(end_time)
+    startDate = datetime.strptime(startDate, '%Y-%m-%d').date()
+    start_time = datetime.strptime(start_time, '%H:%M').time()
+    end_time = datetime.strptime(end_time, '%H:%M').time()
+    if startDate < datetime.now(timezone.utc).date():
+        return False
+    if start_time > end_time:
+        return False
+    if start_time == end_time:
+        return False
+    if start_time < datetime.now(timezone.utc).time():
+        return False
+    if end_time < datetime.now(timezone.utc).time():
+        return False
+    if startDate < listed.start.date():
+        return False
+    if startDate > listed.end.date():
+        return False
+    
+    
+    
+    '''
+    
+    
+class Transaction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_transactions')
+    rented_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rented_transactions')
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    price_per_hour = models.DecimalField(max_digits=6, decimal_places=2)
+    start_date= models.DateField(default=datetime.date.today)
+    start_hour = models.TimeField(default=datetime.datetime.now)
+    end_hour = models.TimeField(default=datetime.datetime.now)
+    is_paid = models.BooleanField(default=False)
+     
+    
+    '''
+
+    # Query transactions for the same user, game, and date
+    overlapping_transactions = Transaction.objects.filter(
+        user=listed.user,
+        game=listed.game,
+        start_date=listed.start,  # Filter transactions for the same date
+        start_hour__lte=start_time,  # Filter transactions with a start_hour less than or equal to the selected start_time
+        end_hour__gte=end_time  # Filter transactions with an end_hour greater than or equal to the selected end_time
+    )
+    
+    start_datetime = datetime.combine(listed.start, start_time)
+    end_datetime = datetime.combine(listed.start, end_time)
+
+    # Check for overlap with existing transactions
+    for transaction in overlapping_transactions:
+        transaction_start = datetime.combine(transaction.start_date, transaction.start_hour)
+        transaction_end = datetime.combine(transaction.start_date, transaction.end_hour)
+
+        if (start_datetime < transaction_start < end_datetime) or \
+           (start_datetime < transaction_end < end_datetime):
+            return False  # Overlapping time range, not available
+
+    return True  # No overlap found, the time range is available
+
+
+def rents(request):
+    if request.user.is_authenticated:
+        user = get_object_or_404(UserProfile, user=request.user)
+        transactions = Transaction.objects.filter(rented_user=user.user).order_by('-start_date').order_by('start_hour')
+        return render(request, 'frontend/rents.html',{"transactions": transactions})
+    else:
+        return redirect('/login')
+from decimal import Decimal
+
+def pay(request, randomNumber):
+    if request.user.is_authenticated:
+        transaction = get_object_or_404(Transaction, randomNumber=randomNumber)
+
+        # Calculate the number of hours
+        start_datetime = datetime.combine(transaction.start_date, transaction.start_hour)
+        end_datetime = datetime.combine(transaction.start_date, transaction.end_hour)
+        time_difference = end_datetime - start_datetime
+        number_of_hours = time_difference.total_seconds() / 3600
+        # Convert number_of_hours to Decimal
+        number_of_hours = Decimal(str(number_of_hours))
+
+        # Set your secret key
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        pricetag=int(transaction.price_per_hour * number_of_hours * 100)
+        print(pricetag)
+        try:
+            # Create a PaymentIntent
+            payment_intent = stripe.PaymentIntent.create(
+                amount=pricetag,
+                currency='usd',
+                description=f'Payment for {transaction.game.title}',
+                payment_method_types=['card'],
+            )
+
+            client_secret = payment_intent.client_secret
+
+            # Save the transaction after successful payment
+            transaction.is_paid = True
+            transaction.save()
+
+            return render(request, 'frontend/payment.html', {'client_secret': client_secret , "total_amount":pricetag})
+        except stripe.error.CardError as e:
+            # Handle card errors
+            error_msg = str(e.error)
+            return render(request, 'frontend/payment.html', {'error_msg': error_msg})
+        except stripe.error.StripeError as e:
+            # Handle other Stripe errors
+            error_msg = "An error occurred. Please try again later."
+            return render(request, 'frontend/payment.html', {'error_msg': error_msg})
+    else:
+        return redirect('/login')

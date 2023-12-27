@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-{% load custom_filters %}
 
 <head>
     <meta charset="UTF-8">
@@ -104,6 +103,7 @@
             <div class="card-body">
                 <h5 class="card-title">Listing Details</h5>
                 <p class="card-text">Price per hour: ${{ listed.price_per_hour }}  Average price ${{ avgPrice }}</p>
+                <span class="card-text">Available from: </span>{{listed.start}} to {{listed.end}}</p>
                 <!-- Add more details as needed -->
             </div>
         </div>
@@ -118,26 +118,9 @@
                 <div class="form-group">
                     <label for="selected_start">Start Date and Time:</label>
                     <input type="date" id="start" name="selected_start" class="form-control" required>
-
-                    <select name="start_hour" class="form-control mt-2" required>
-                        {% for hour in hours %}
-                            {% if not hour|hour_unavailable:listed %}
-                                <option value="{{ hour }}">Start Hour {{ hour }}</option>
-                            {% else %}
-                                <option value="{{ hour }}" disabled>Start Hour {{ hour }} (Unavailable)</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-
-                    <select name="end_hour" class="form-control mt-2" required>
-                        {% for hour in hours %}
-                            {% if not hour|hour_unavailable:listed %}
-                                <option value="{{ hour }}">Ending Hour {{ hour }}</option>
-                            {% else %}
-                                <option value="{{ hour }}" disabled>Ending Hour {{ hour }} (Unavailable)</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
+                    <input type="time" name="start" value="22:00" />
+                    <input type="time" name="end" value="23:00" />
+                    
 
                 </div>
 

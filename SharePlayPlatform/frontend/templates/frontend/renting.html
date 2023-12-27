@@ -80,21 +80,14 @@
         <div class="form-group">
             <label for="start">Start Date and Time:</label>
             <input type="date" id="start" name="start" class="form-control" required>
-            <select name="start_hour" class="form-control mt-2" required>
-                {% for hour in hours %}
-                <option value="{{ hour }}">Starting Hour {{ hour }}</option>
-                {% endfor %}
-            </select>
+            <input type="time" name="starting_hour" value="7:00" />
+
         </div>
 
         <div class="form-group">
             <label for="end">End Date and Time:</label>
             <input type="date" id="end" name="end" class="form-control" required>
-            <select name="end_hour" class="form-control mt-2" required>
-                {% for hour in hours %}
-                <option value="{{ hour }}">Ending Hour {{ hour }}</option>
-                {% endfor %}
-            </select>
+            <input type="time" name="ending_hour" value="16:00" />
         </div>
 
         <button type="submit" class="btn btn-primary">List Game</button>
