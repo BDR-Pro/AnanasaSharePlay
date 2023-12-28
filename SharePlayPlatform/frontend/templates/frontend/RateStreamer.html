@@ -1,0 +1,89 @@
+<!-- frontend/RateStreamer.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Streamer</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Your custom CSS styles can be added here -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            max-width: 100px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <h2>Rate Streamer</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ transaction.game.title }}</h5>
+                <a href="/users/{{streamer.username}}">
+                    <img src="{{ StreamerProfile.avatar.url }}" class="avatar" alt="Streamer Profile Pic">
+                </a>
+                <p class="card-text">Streamer: {{ StreamerProfile.nickname }}</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="rating">Rating:</label>
+                        <input type="number" class="form-control" id="rating" name="rating" min="1" max="5" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="content">Your Review:</label>
+                        <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit Rating</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS and Popper.js (required for Bootstrap components) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

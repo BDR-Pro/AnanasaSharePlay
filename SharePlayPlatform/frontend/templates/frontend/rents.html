@@ -1,3 +1,4 @@
+<!-- frontend/rents.html -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -40,12 +41,15 @@
             margin-top: 20px;
         }
 
-        table, th, td {
+        table,
+        th,
+        td {
             border: 1px solid #dee2e6;
             text-align: left;
         }
 
-        th, td {
+        th,
+        td {
             padding: 10px;
         }
 
@@ -70,24 +74,40 @@
                 <div class="card">
                     <div class="card-body">
                         <a href="{% url 'frontend:game_detail' transaction.game.slug %}">
-                        <h5 class="card-title">{{ transaction.game.title }}</h5>
+                            <h5 class="card-title">{{ transaction.game.title }}</h5>
                         </a>
-                        <p></p>
-                        <a href="{% url 'frontend:genre' transaction.game.genre %}">
                         <p class="card-text">Genre: {{ transaction.game.genre }}</p>
-                        </a>
-                        <p></p>
                         <p class="card-text">Price Per Hour: ${{ transaction.price_per_hour }}</p>
                         <p class="card-text">Start Date: {{ transaction.start_date }}</p>
                         <p class="card-text">Start Time: {{ transaction.start_hour|time:"H:i" }}</p>
                         <p class="card-text">End Time: {{ transaction.end_hour|time:"H:i" }}</p>
+
                         <p class="card-text">
                             {% if transaction.is_paid %}
-                                Paid
+                                {% if transaction.isitToday %}
+                                    {% if transaction.isPlayable %}
+                                        <a href="{% url 'frontend:play' transaction.id %}">
+                                            <button class="btn btn-primary">Play</button>
+                                        </a>
+                                    {% else %}
+                                        <button class="btn btn-primary" disabled>Play</button>
+                                        <p class="card-text">You can play this game in {{ transaction.start_hour|time:"H:i" }}.</p>
+                                    {% endif %}
+
+                                    {% if transaction.isPlayed %}
+                                    <a href="{% url 'frontend:RateStreamer' transaction.id %}">
+                                        <button class="btn btn-primary">Rate Streamer</button>
+                                    </a>
+                                    {% else %}
+                                        <button class="btn btn-primary" disabled>Rate Streamer</button>
+                                        <p class="card-text">You can rate the streamer after you play the game.</p>
+                                    {% endif %}
+                                    {%endif%}
                             {% else %}
-                            <a href="{% url 'frontend:pay' transaction.randomNumber  %}" class="btn btn-primary">Pay</a>
+                                <a href="{% url 'frontend:pay' transaction.randomNumber %}" class="btn btn-primary">Pay</a>
                                 Not Paid
                             {% endif %}
+
                         </p>
                     </div>
                 </div>

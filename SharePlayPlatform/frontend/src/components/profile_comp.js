@@ -1,15 +1,15 @@
-// profile.js
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { render } from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faAt, faEdit } from '@fortawesome/free-solid-svg-icons';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardText, MDBCardImage } from 'mdb-react-ui-kit';
-import ProfileEdit from './ProfileEdit'; // Import the ProfileEdit component
+import ProfileEdit from './ProfileEdit';
 import { Button } from 'react-bootstrap';
+import RatingStars from './RatingStars';
+import { getUserNickname, getAvatarById } from './utils';
 
-const CommonProfile = ({ userInfo, onEditClick, isEditable }) => {
+const CommonProfile = ({ userInfo, onEditClick, isEditable, reviews }) => {
   return (
     <div>
       <div className="rounded-top text-white d-flex flex-row" id="background" style={{ backgroundImage: `url(${userInfo.header})`, width: '100%', height: '200px', borderRadius: '10px' }}>
@@ -67,6 +67,22 @@ const CommonProfile = ({ userInfo, onEditClick, isEditable }) => {
             {/* Add your recent played games content here */}
           </MDBCol>
         </MDBRow>
+
+        <div className="mt-4">
+          <h4>Recent Reviews</h4>
+          {Array.isArray(reviews) && reviews.length === 0 ? <p>No reviews yet</p> : null}
+          {reviews.map((review, index) => (
+            <div key={index} className="mb-3">
+              <img src={getAvatarById(review.user)} alt="User Avatar" />
+              <p>Rating: <RatingStars rating={review.rating}></RatingStars></p>
+              <p>Content: {review.content}</p>
+              <p>Gamer: {getUserNickname(review.user)}</p>
+              <a href={`/gamedetail/${review.game_slug}`}>
+                <p>Game: {review.game_name} </p>
+              </a>
+            </div>
+          ))}
+        </div>
       </MDBCardBody>
     </div>
   );
@@ -76,25 +92,57 @@ const Profile = () => {
   const [userInfo, setUserInfo] = useState({});
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
 
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
+  const fetchReviews = useCallback(async () => {
+    try {
+      const response = await fetch('/api/getReviews/' + window.location.pathname.split('/')[2]);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      console.log('Reviews Data:', data.reviews);
+
+      if (data && data.reviews) {
+        setReviews(data.reviews);
+      } else {
+        console.error('Invalid data structure received:', data);
+      }
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+    } finally {
+      setReviewsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    // Simulated fetch request to get user profile data
-    // Replace this with your actual fetch logic
-    fetch('/api/getProfile/' + window.location.pathname.split('/')[2] + '/')
-      .then(response => response.json())
-      .then(data => {
-        setUserInfo(data);
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/getProfile/' + window.location.pathname.split('/')[2] + '/');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log('Profile Data:', data);
         if (data.isCurrentUser) {
           setIsCurrentUser(true);
         } else {
           setIsCurrentUser(false);
         }
-      });
-  }, []);
+        setUserInfo(data);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    fetchData();
+    fetchReviews();
+  }, [fetchReviews]);
 
   return (
     <div className="gradient-custom-2" style={{ backgroundColor: '#edf4f7' }}>
@@ -105,7 +153,7 @@ const Profile = () => {
               {isEditing ? (
                 <ProfileEdit userInfo={userInfo} />
               ) : (
-                <CommonProfile userInfo={userInfo} onEditClick={handleEditClick} isEditable={isCurrentUser} />
+                <CommonProfile userInfo={userInfo} onEditClick={handleEditClick} isEditable={isCurrentUser} reviews={reviews} />
               )}
             </MDBCard>
           </MDBCol>

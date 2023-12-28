@@ -1,6 +1,6 @@
 
 from rest_framework import generics
-from .models import Game, UserProfile, Transaction, Reviews
+from .models import Game, UserProfile, Transaction, Reviews,RateStreamerModel
 from .serializers import GameSerializer, UserSerializer, TransactionSerializer, ReviewsSerializer
 from django.http import JsonResponse
 from django.contrib.auth.models import User as AuthUser
@@ -152,3 +152,24 @@ def getAvatar(request,id):
     user=UserProfile.objects.get(user=user)
     print(user.avatar.url)
     return JsonResponse({'avatar': user.avatar.url})
+
+def getReviews(request, user):
+    try:
+        user = AuthUser.objects.get(username=user)
+        reviews = RateStreamerModel.objects.filter(streamer=user)
+        review_list = []
+
+        for review in reviews:
+            review_info = {
+                'content': review.content,
+                'rating': review.rating,
+                'user': review.user.id,
+                'game_slug': review.game.slug,
+                'game_name': review.game.title,
+            }
+            review_list.append(review_info)
+
+        return JsonResponse({'reviews': review_list})
+    
+    except AuthUser.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)

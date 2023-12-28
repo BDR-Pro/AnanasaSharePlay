@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from shareplay.models import Game , UserProfile , Listing, Transaction , Reviews
+from shareplay.models import Game , UserProfile , Listing, Transaction , Reviews, RateStreamerModel
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from urllib.parse import unquote
@@ -317,20 +317,32 @@ class Listing(models.Model):
             return False  # Overlapping time range, not available
 
     return True  # No overlap found, the time range is available
-
+'''
+"today": datetime.now(timezone.utc).date().strftime("%Y-%m-%d"),"timeNow": datetime.now(timezone.utc).time().hour+3
+'''
+from django.utils import timezone
 
 def rents(request):
     if request.user.is_authenticated:
         user = get_object_or_404(UserProfile, user=request.user)
-        transactions = Transaction.objects.filter(rented_user=user.user).order_by('-start_date').order_by('start_hour')
-        return render(request, 'frontend/rents.html',{"transactions": transactions})
+        transactions = Transaction.objects.filter(rented_user=user.user).order_by('-start_date')
+        
+        for transaction in transactions:
+            transaction.isitToday = timezone.now().date() == transaction.start_date
+            transaction.isPlayable = timezone.now().time().hour + 3 >= transaction.start_hour.hour and timezone.now().time().hour + 3 <= transaction.end_hour.hour  
+        
+        context = {"transactions": transactions}
+        return render(request, 'frontend/rents.html', context)
     else:
         return redirect('/login')
+
 from decimal import Decimal
 
 def pay(request, randomNumber):
     if request.user.is_authenticated:
         transaction = get_object_or_404(Transaction, randomNumber=randomNumber)
+        if transaction.is_paid:
+            return redirect('/Profile/rents')
         # Calculate the number of hours
         start_datetime = datetime.combine(transaction.start_date, transaction.start_hour)
         end_datetime = datetime.combine(transaction.start_date, transaction.end_hour)
@@ -406,3 +418,33 @@ def check_invoice_payment_status(request):
         print(f"Stripe error: {e}")
         return False
     
+def RateStreamer(request,Transid):
+    if not request.user.is_authenticated:
+        redirect('/login')
+        
+    trans=get_object_or_404(Transaction, id=Transid)
+    streamer=trans.user
+    game=trans.game
+    context ={
+        "game":game,
+        "streamer":streamer,
+        "StreamerProfile":UserProfile.objects.get(user=streamer),
+        "transaction":trans,
+    }
+    print(context)
+    if request.method == 'GET':
+        return render(request, 'frontend/RateStreamer.html',context)
+    if request.method == 'POST':
+        print(request.POST)
+        rating=request.POST['rating']
+        content=request.POST['content']
+        print(request.user)
+        newRate=RateStreamerModel(user=request.user,game=game,streamer=streamer,rating=rating,content=content)
+        newRate.save()
+        return redirect('/')
+    
+    
+def play(request,Transid):
+    trans=get_object_or_404(Transaction, id=Transid)
+    trans.isPlayed=True
+    return redirect(trans.session_id)
