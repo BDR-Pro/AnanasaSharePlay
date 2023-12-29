@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from urllib.parse import unquote
 from django.db.models import Avg
 from datetime import datetime, timezone
+from django.db.models import Sum, F, ExpressionWrapper, fields
 from datetime import date
 
 from django.db.models import Avg
@@ -226,33 +227,30 @@ def RentYourGame(request, id):
             if is_time_range_available(listed, selected_start,start_time=start_hour, end_time=end_hour):
                 print(listed.user)
                 print(request.user)
-                print(listed.game)                
-                '''
-                
-class Transaction(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_transactions')
-    rented_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rented_transactions')
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    price_per_hour = models.DecimalField(max_digits=6, decimal_places=2)
-    start = models.DateTimeField()
-    end = models.DateTimeField(default=datetime.datetime.now)
-    is_paid = models.BooleanField(default=False)
-     
-     
-                
-                '''
-                initTransaction = Transaction.objects.create(
-                    user=listed.user,
-                    rented_user=request.user,
-                    game=listed.game,
-                    price_per_hour=listed.price_per_hour,
-                    start_date=selected_start,
-                    start_hour=start_hour,  
-                    end_hour=end_hour,
-                    revenue=(end_hour-start_hour)*listed.price_per_hour,      
-                )
-                return redirect('/Profile/rents')
-            else:
+                print(listed.game)  
+            
+            start_time = datetime.strptime(start_hour, "%H:%M")
+            end_time = datetime.strptime(end_hour, "%H:%M")
+
+            # Calculate duration in hours
+            duration = end_time - start_time
+            duration_hours = duration.total_seconds() / 3600  # Convert seconds to hours
+
+            # Calculate revenue
+            revenue = Decimal(str(duration_hours)) * listed.price_per_hour        
+        
+            initTransaction = Transaction.objects.create(
+                user=listed.user,
+                rented_user=request.user,
+                game=listed.game,
+                price_per_hour=listed.price_per_hour,
+                start_date=selected_start,
+                start_hour=start_hour,  
+                end_hour=end_hour,
+                revenue=revenue,      
+            )
+            return redirect('/Profile/rents')
+        else:
                 raise PermissionDenied  
 
 def is_time_range_available(listed: Listing,startDate, start_time, end_time):
@@ -472,3 +470,25 @@ def DeleteYourGame(request,id):
     else:
         return JsonResponse({'status': 'fail'})
     
+def Statistic(request):
+    # Get counts from the models
+    user_profile_count = UserProfile.objects.count()
+    listing_count = Listing.objects.count()
+    game_count = Game.objects.count()
+    transaction_count = Transaction.objects.count()
+    review_count = Reviews.objects.count()
+    rating_count = RateStreamerModel.objects.count()
+
+    # Assuming you want to pass these counts to the template, you can define the context dictionary
+    context = {
+        'user_profile_count': user_profile_count,
+        'listing_count': listing_count,
+        'game_count': game_count,
+        'transaction_count': transaction_count,
+        'review_count': review_count,
+        'rating_count': rating_count,
+        'total_revenue': Transaction.objects.aggregate(Sum('revenue'))['revenue__sum'],
+    }
+
+    # Render the template with the provided context
+    return render(request, 'frontend/Statistic.html', context)
