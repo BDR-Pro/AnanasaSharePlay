@@ -1,8 +1,11 @@
 
 from rest_framework import generics
-from .models import Game, UserProfile, Transaction, Reviews,RateStreamerModel
+from .models import Game, UserProfile, Transaction, Reviews,RateStreamerModel,Listing
+from datetime import datetime, timezone
+from django.db.models import Sum, F, ExpressionWrapper, fields
 from .serializers import GameSerializer, UserSerializer, TransactionSerializer, ReviewsSerializer
 from django.http import JsonResponse
+from datetime import date
 from django.contrib.auth.models import User as AuthUser
 import json
 from django.shortcuts import get_object_or_404
@@ -63,12 +66,59 @@ def profile(request,username):
     else:
        email=""
     user=AuthUser.objects.get(username=username)
+    playedGames=Transaction.objects.filter(user=user,isPlayed=True).count()
+    NumberOfListedGames=Listing.objects.filter(user=user).count()
+    revenue = Transaction.objects.filter(user=user, is_paid=True).aggregate(
+        total_revenue=Sum('revenue')
+    )['total_revenue']
+
+    print(revenue)
+    revenue = revenue if revenue else 0
+    recentlyPlayedGames=Transaction.objects.filter(rented_user=user,isPlayed=True).order_by('-start_date','-start_hour')[:5]
+    print(recentlyPlayedGames)
+    today = datetime.now(timezone.utc).date()
+    mylistedGames=Listing.objects.filter(end__gt=today,user=user).order_by('-starting_time')[:3]
+    mylistedGames=list(mylistedGames.values())
+     
+    for game in mylistedGames:
+        avatar = Game.objects.get(id=game['game_id']).image.url
+        title = Game.objects.get(id=game['game_id']).title
+        slug = Game.objects.get(id=game['game_id']).slug
+        game['game_avatar'] = avatar
+        game['game_title'] = title
+        game['game_slug'] = slug
+        
     user=UserProfile.objects.get(user=user)
-    return JsonResponse({'username': user.user.username, 'email': email,
+    user.revenue = revenue
+    if user.isRevenuePrivate and request.user.username != username:
+        revenue = "$$$$"
+    else:
+        revenue = f"${revenue}"
+    
+    recentlyPlayedGames = list(recentlyPlayedGames.values())        
+    for game in recentlyPlayedGames:
+        avatar = Game.objects.get(id=game['game_id']).image.url
+        title = Game.objects.get(id=game['game_id']).title
+        slug = Game.objects.get(id=game['game_id']).slug
+        game['game_avatar'] = avatar
+        game['game_title'] = title
+        game['game_slug'] = slug
+        
+    print("recentlyPlayedGames")
+    print(recentlyPlayedGames)
+    
+    context = {'username': user.user.username, 'email': email,
                          'nickname': user.nickname, 'avatar': user.avatar.url,
                          'bio': user.bio,
                          'header': user.header.url,"isCurrentUser":
-                             request.user.is_authenticated and request.user.username == username})
+                             request.user.is_authenticated and request.user.username == username,
+                             "playedGames":playedGames,"NumberOfListedGames":NumberOfListedGames,"revenue":revenue,
+                             "isRevenuePrivate":user.isRevenuePrivate,   
+                             "recentlyPlayedGames":recentlyPlayedGames, 
+                             "mylistedGames":mylistedGames,
+                             "reviews": getReviews(username)['reviews']                        
+                              }
+    return JsonResponse(context)
 
 
 def updateProfile(request):
@@ -84,6 +134,7 @@ def updateProfile(request):
         user.bio=request.POST.get('bio') if request.POST.get('bio') else user.bio
         user.avatar=request.FILES.get('avatar') if request.FILES.get('avatar') else user.avatar
         user.header=request.FILES.get('header') if request.FILES.get('header') else user.header
+        user.isRevenuePrivate=True if request.POST.get('isRevenuePrivate')=="private" else user.isRevenuePrivate==False
         user.save()
         return JsonResponse({'username': user.user.username, 'email': user.user.email,
                          'nickname': user.nickname, 'avatar': user.avatar.url,
@@ -153,7 +204,7 @@ def getAvatar(request,id):
     print(user.avatar.url)
     return JsonResponse({'avatar': user.avatar.url})
 
-def getReviews(request, user):
+def getReviews(user):
     try:
         user = AuthUser.objects.get(username=user)
         reviews = RateStreamerModel.objects.filter(streamer=user)
@@ -163,13 +214,17 @@ def getReviews(request, user):
             review_info = {
                 'content': review.content,
                 'rating': review.rating,
-                'user': review.user.id,
+                'user': review.user.username,
+                'user_avatar': review.user.userprofile.avatar.url,
                 'game_slug': review.game.slug,
-                'game_name': review.game.title,
+                'user_nickname': review.user.userprofile.nickname,
+                'game_title': review.game.title,
             }
             review_list.append(review_info)
 
-        return JsonResponse({'reviews': review_list})
+        return {'reviews': review_list}
     
-    except AuthUser.DoesNotExist:
-        return JsonResponse({'error': 'User not found'}, status=404)
+    except Exception as e:
+        print(e)
+        return {'reviews': []}
+    

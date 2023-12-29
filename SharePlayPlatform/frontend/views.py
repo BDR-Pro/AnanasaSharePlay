@@ -5,6 +5,8 @@ from django.shortcuts import get_object_or_404
 from urllib.parse import unquote
 from django.db.models import Avg
 from datetime import datetime, timezone
+from datetime import date
+
 from django.db.models import Avg
 from django.core.exceptions import PermissionDenied
 from django.utils.timezone import make_aware
@@ -107,8 +109,9 @@ def renting(request, slug):
             games = Game.objects.all()
             listed = Listing.objects.filter(game=game)
             print(listed)
-            print("before-------filter") 
-            listed = Listing.objects.filter(game=game, end__gte=datetime.now(timezone.utc))
+            print("before-------filter")
+            today = datetime.now(timezone.utc).date()
+            listed = Listing.objects.filter(game=game, end__gt=today).order_by('-start')
             print(listed)
             
             print("before sorted")
@@ -245,7 +248,8 @@ class Transaction(models.Model):
                     price_per_hour=listed.price_per_hour,
                     start_date=selected_start,
                     start_hour=start_hour,  
-                    end_hour=end_hour      
+                    end_hour=end_hour,
+                    revenue=(end_hour-start_hour)*listed.price_per_hour,      
                 )
                 return redirect('/Profile/rents')
             else:
@@ -329,9 +333,11 @@ def rents(request):
         
         for transaction in transactions:
             transaction.isitToday = timezone.now().date() == transaction.start_date
-            transaction.isPlayable = timezone.now().time().hour + 3 >= transaction.start_hour.hour and timezone.now().time().hour + 3 <= transaction.end_hour.hour  
-        
+            transaction.isPlayable = timezone.now().time().hour + 3 >= transaction.start_hour.hour and timezone.now().time().hour + 3 <= transaction.end_hour.hour  and timezone.now().date() == transaction.start_date
+            transaction.notExpied = timezone.now().date() <= transaction.start_date
         context = {"transactions": transactions}
+        print(context)
+
         return render(request, 'frontend/rents.html', context)
     else:
         return redirect('/login')
@@ -439,6 +445,7 @@ def RateStreamer(request,Transid):
         rating=request.POST['rating']
         content=request.POST['content']
         print(request.user)
+        trans.isRated=True
         newRate=RateStreamerModel(user=request.user,game=game,streamer=streamer,rating=rating,content=content)
         newRate.save()
         return redirect('/')
@@ -448,3 +455,20 @@ def play(request,Transid):
     trans=get_object_or_404(Transaction, id=Transid)
     trans.isPlayed=True
     return redirect(trans.session_id)
+
+
+def listed(request,username):
+    today = datetime.now(timezone.utc).date()
+    listing_games = Listing.objects.filter(end__gt=today, user__username=username).order_by('-start')
+    return render(request, 'frontend/listed.html',{"listing_games": listing_games})
+
+
+
+    
+def DeleteYourGame(request,id):
+    if request.user.is_authenticated and request.user == Listing.objects.get(id=id).user:
+        Listing.objects.get(id=id).delete()
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'fail'})
+    

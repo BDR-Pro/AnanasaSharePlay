@@ -25,6 +25,8 @@ class UserProfile(models.Model):
     header = models.ImageField(upload_to='header/', default='header/default.png')
     games = models.ManyToManyField(Game, blank=True, related_name='user_games', default=None)
     for_rent = models.JSONField(blank=True, null=True)  # JSONField is a dictionary <game:PricePerHour>
+    revenue = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    isRevenuePrivate = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
@@ -45,6 +47,9 @@ class Transaction(models.Model):
     isitToday= models.BooleanField(default=False)
     isPlayable= models.BooleanField(default=False)
     isPlayed= models.BooleanField(default=False)
+    notExpied= models.BooleanField(default=False)
+    isRated = models.BooleanField(default=False)
+    revenue= models.DecimalField(max_digits=6, decimal_places=2, default=0)
     
     
     def __str__(self) -> str:

@@ -1,14 +1,16 @@
 from django.urls import path
 
-from .views import index ,play, detail, login, register, search,Profile,MyGames,genre,pay,renting,RentYourGame,rents,check_invoice_payment_status,RateStreamer
+from .views import index ,play,listed, detail, login, DeleteYourGame ,register, search,Profile,MyGames,genre,pay,renting,RentYourGame,rents,check_invoice_payment_status,RateStreamer
 
 app_name = 'frontend'
 
 urlpatterns = [
     path('', index, name='index'),
     path('rent-your-game/<id>',RentYourGame),
+    path('delete-your-game/<id>', DeleteYourGame),
     path('profile', Profile),
     path('Profile/rents', rents, name='profile'),
+    path('Profile/listed/<username>',listed,name='listed'),
     path('MyGames',MyGames),
     path('search',search),
     path('game/<slug:slug>/', detail, name='game_detail'),

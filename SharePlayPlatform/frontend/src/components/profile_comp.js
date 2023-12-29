@@ -1,27 +1,31 @@
-import React, { useEffect, useState, useCallback } from 'react';
+// Import React and other necessary libraries
+import React, { useEffect, useState } from 'react';
 import { render } from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faAt, faEdit } from '@fortawesome/free-solid-svg-icons';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { faUser, faAt, faEdit,faTrash,faEye, faDollarSign,faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import { MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardText, MDBCardImage } from 'mdb-react-ui-kit';
-import ProfileEdit from './ProfileEdit';
+import ProfileEdit from './ProfileEdit'; // Import the ProfileEdit component
 import { Button } from 'react-bootstrap';
 import RatingStars from './RatingStars';
-import { getUserNickname, getAvatarById } from './utils';
 
-const CommonProfile = ({ userInfo, onEditClick, isEditable, reviews }) => {
+// CommonProfile component
+const CommonProfile = ({ userInfo, onEditClick, isEditable }) => {
   return (
     <div>
+      {/* Header Section */}
       <div className="rounded-top text-white d-flex flex-row" id="background" style={{ backgroundImage: `url(${userInfo.header})`, width: '100%', height: '200px', borderRadius: '10px' }}>
+        {/* Avatar and Edit Button */}
         <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
           <MDBCardImage src={userInfo.avatar} alt="Avatar" className="mt-4 mb-2 img-thumbnail" fluid style={{ width: '150px', zIndex: '1' }} />
           {isEditable ? (
-            <Button variant="secondary" style={{ height: '36px', overflow: 'visible'}} onClick={onEditClick}>
+            <Button variant="secondary" style={{ height: '36px', overflow: 'visible' }} onClick={onEditClick}>
               <FontAwesomeIcon icon={faEdit} className="me-2" />
               Edit profile
             </Button>
           ) : null}
         </div>
+        {/* User Details */}
         <div className="ms-3" style={{ marginTop: '130px' }}>
           <div style={{ backgroundColor: '#dbd9d9', display: 'inline-block', padding: '8px', borderRadius: '4px' }}>
             <MDBCardText className="mb-0">
@@ -35,22 +39,24 @@ const CommonProfile = ({ userInfo, onEditClick, isEditable, reviews }) => {
           </div>
         </div>
       </div>
+      {/* Statistics Section */}
       <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
         <div className="d-flex justify-content-end text-center py-1">
           <div>
-            <MDBCardText className="mb-1 h5">253</MDBCardText>
-            <MDBCardText className="small text-muted mb-0">Photos</MDBCardText>
+            <MDBCardText className="mb-1 h5">{userInfo.playedGames}</MDBCardText>
+            <MDBCardText className="small text-muted mb-0">Played Games</MDBCardText>
           </div>
           <div className="px-3">
-            <MDBCardText className="mb-1 h5">1026</MDBCardText>
-            <MDBCardText className="small text-muted mb-0">Followers</MDBCardText>
+            <MDBCardText className="mb-1 h5">{userInfo.NumberOfListedGames}</MDBCardText>
+            <MDBCardText className="small text-muted mb-0">Listed Games</MDBCardText>
           </div>
           <div>
-            <MDBCardText className="mb-1 h5">478</MDBCardText>
-            <MDBCardText className="small text-muted mb-0">Following</MDBCardText>
+            <MDBCardText className="mb-1 h5">{userInfo.revenue}</MDBCardText>
+            <MDBCardText className="small text-muted mb-0">Revenue</MDBCardText>
           </div>
         </div>
       </div>
+      {/* Main Content */}
       <MDBCardBody className="text-black p-4">
         <div className="mb-5">
           <p className="lead fw-normal mb-1">About</p>
@@ -58,91 +64,136 @@ const CommonProfile = ({ userInfo, onEditClick, isEditable, reviews }) => {
             <MDBCardText className="font-italic mb-1">{userInfo.bio}</MDBCardText>
           </div>
         </div>
+        {/* Recent Played Games Section */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <MDBCardText className="lead fw-normal mb-0">Recent played games</MDBCardText>
-          <MDBCardText className="mb-0"><a href="#!" className="text-muted">Show all</a></MDBCardText>
+          {userInfo.isCurrentUser ? (
+            <MDBCardText className="mb-0">
+              <a href="/Profile/rents" className="text-muted">Show all</a>
+            </MDBCardText>
+          ) : null}
         </div>
         <MDBRow>
-          <MDBCol className="mb-2">
-            {/* Add your recent played games content here */}
-          </MDBCol>
+          {userInfo.recentlyPlayedGames ? (
+            userInfo.recentlyPlayedGames.map((game, index) => (
+              <MDBCol lg="3" md="6" className="mb-4 mb-lg-0" key={`game-${index}`}>
+                <a href={`/game/${game.game_slug}`}>
+                  <div className="card rounded shadow-sm border-0">
+                    <div className="card-body p-4"><img src={game.game_avatar} alt="" className="img-fluid d-block mx-auto mb-3" />
+                      <p className="small text-muted font-italic">{game.game_title}</p>
+                      <p className="small text-muted d-flex align-items-center">
+                        <FontAwesomeIcon icon={faDollarSign} className="me-1" />
+                        {game.revenue}
+                      </p>
+                    </div>
+                  </div>
+                </a>
+              </MDBCol>
+            ))
+          ) : null}
         </MDBRow>
-
-        <div className="mt-4">
-          <h4>Recent Reviews</h4>
-          {Array.isArray(reviews) && reviews.length === 0 ? <p>No reviews yet</p> : null}
-          {reviews.map((review, index) => (
-            <div key={index} className="mb-3">
-              <img src={getAvatarById(review.user)} alt="User Avatar" />
-              <p>Rating: <RatingStars rating={review.rating}></RatingStars></p>
-              <p>Content: {review.content}</p>
-              <p>Gamer: {getUserNickname(review.user)}</p>
-              <a href={`/gamedetail/${review.game_slug}`}>
-                <p>Game: {review.game_name} </p>
-              </a>
-            </div>
-          ))}
+        {/* Games For Rent Section */}
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <MDBCardText className="lead fw-normal mb-0">Games For Rent</MDBCardText>
+          {userInfo.isCurrentUser ? (
+            <MDBCardText className="mb-0">
+              <a href={`/Profile/listed/${window.location.pathname.split('/')[2]}`} className="text-muted">Show all</a>
+            </MDBCardText>
+          ) : null}
         </div>
+              <MDBRow>{userInfo.mylistedGames ? (
+  userInfo.mylistedGames.map((game, index) => (
+    <MDBCol lg="3" md="6" className="mb-4 mb-lg-0" key={`game-${index}`}>
+      <div className="card rounded shadow-sm border-0">
+        <img src={game.game_avatar} alt="" className="card-img-top img-fluid" />
+        <div className="card-body p-4">
+          <h5 className="card-title">{game.title}</h5>
+          <p className="card-text small text-muted font-italic">{game.game_title}</p>
+          <p className="card-text small text-muted d-flex align-items-center">
+            <FontAwesomeIcon icon={faDollarSign} className="me-1" />
+            {game.price_per_hour}
+          </p>
+          <div className="d-flex justify-content-between mt-3">
+          <a href={`/game/${game.game_slug}`} className="btn btn-info btn-sm">
+            <FontAwesomeIcon icon={faEye} className="me-2" />
+            View
+          </a>
+          <div>
+            <a href={`/rent-your-game/${game.id}`} className="btn btn-secondary btn-sm me-2">
+              <FontAwesomeIcon icon={faCartShopping} className="me-2" />
+              Book
+            </a>
+            {userInfo.isCurrentUser ? (
+              <a href={`/delete-your-game/${game.id}`} className="btn btn-danger btn-sm">
+                <FontAwesomeIcon icon={faTrash} className="me-2" />
+                Delete
+              </a>
+            ) : null}
+          </div>
+        </div>
+
+        </div>
+      </div>
+    </MDBCol>
+  ))
+) : null}
+
+        </MDBRow>
+        {/* Reviews Section */}
+        <MDBRow>
+          <MDBCardText className="lead fw-normal mb-0">Reviews for the streamer</MDBCardText>
+          {userInfo.reviews ? (
+            userInfo.reviews.map((review, index) => (
+              <MDBCol lg="3" md="6" className="mb-4 mb-lg-0" key={`review-${index}`}>
+                <a href={`/user/${review.user}`}>
+                  <div className="card rounded shadow-sm border-0">
+                    <div className="card-body p-4"><img src={review.user_avatar} alt="" className="img-fluid d-block mx-auto mb-3" />
+                      <p className="small">{review.content}</p>
+                      <RatingStars rating={review.rating} />
+                      <a href={`/game/${review.game_slug}`}>
+                        <p className="small text-muted d-flex align-items-center">
+                          {review.game_title}
+                        </p>
+                      </a>
+                      <p className="small text-muted d-flex align-items-center">
+                        {review.user_nickname}
+                      </p>
+                    </div>
+                  </div>
+                </a>
+              </MDBCol>
+            ))
+          ) : null}
+        </MDBRow>
       </MDBCardBody>
     </div>
   );
 };
 
+// Profile component
 const Profile = () => {
   const [userInfo, setUserInfo] = useState({});
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [reviews, setReviews] = useState([]);
-  const [reviewsLoading, setReviewsLoading] = useState(true);
 
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
-  const fetchReviews = useCallback(async () => {
-    try {
-      const response = await fetch('/api/getReviews/' + window.location.pathname.split('/')[2]);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      console.log('Reviews Data:', data.reviews);
-
-      if (data && data.reviews) {
-        setReviews(data.reviews);
-      } else {
-        console.error('Invalid data structure received:', data);
-      }
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-    } finally {
-      setReviewsLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('/api/getProfile/' + window.location.pathname.split('/')[2] + '/');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        console.log('Profile Data:', data);
+    // Simulated fetch request to get user profile data
+    // Replace this with your actual fetch logic
+    fetch('/api/getProfile/' + window.location.pathname.split('/')[2] + '/')
+      .then(response => response.json())
+      .then(data => {
+        setUserInfo(data);
         if (data.isCurrentUser) {
           setIsCurrentUser(true);
         } else {
           setIsCurrentUser(false);
         }
-        setUserInfo(data);
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      }
-    };
-
-    fetchData();
-    fetchReviews();
-  }, [fetchReviews]);
+      });
+  }, []);
 
   return (
     <div className="gradient-custom-2" style={{ backgroundColor: '#edf4f7' }}>
@@ -153,7 +204,7 @@ const Profile = () => {
               {isEditing ? (
                 <ProfileEdit userInfo={userInfo} />
               ) : (
-                <CommonProfile userInfo={userInfo} onEditClick={handleEditClick} isEditable={isCurrentUser} reviews={reviews} />
+                <CommonProfile userInfo={userInfo} onEditClick={handleEditClick} isEditable={isCurrentUser} />
               )}
             </MDBCard>
           </MDBCol>
@@ -163,5 +214,6 @@ const Profile = () => {
   );
 };
 
+// Render the Profile component
 const profileDiv = document.getElementById('profile');
 render(<Profile />, profileDiv);

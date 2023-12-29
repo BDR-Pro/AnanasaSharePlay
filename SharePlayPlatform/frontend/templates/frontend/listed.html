@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listed Games</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom Styles */
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .game-item a {
+            color: black; /* Set the link color to black */
+        }
+        
+        .game-item a:hover {
+            color: black; /* Set the link hover color to black */
+        }
+        
+        .container {
+            margin-top: 50px;
+        }
+
+        .game-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .game-item {
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-item h4 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .game-item strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .game-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-5">Listed Games</h1>
+
+        {% if listing_games %}
+            <div class="row game-list">
+                {% for listing in listing_games %}
+                    <div class="col-lg-4">
+                        <a href="/game/{{ listing.game.slug }}" class="text-decoration-none">
+                            <div class="game-item">
+                                <img src="{{ listing.game.image.url }}" alt="{{ listing.game.title }}" class="img-fluid">
+                                <h4>{{ listing.game.title }}</h4>
+                                <strong>Price per Hour:</strong> ${{ listing.price_per_hour }}<br>
+                                <strong>Start Time:</strong> {{ listing.start }}<br>
+                                <strong>End Time:</strong> {{ listing.end }}<br>
+                                <strong>Starting Time:</strong> {{ listing.starting_time }}<br>
+                                <strong>Ending Time:</strong> {{ listing.ending_time }}<br>
+                                <a href="/rent-your-game/{{listing.id}}" class="btn btn-primary">Book Now</a>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center">No games listed.</p>
+        {% endif %}
+    </div>
+
+    <!-- Bootstrap JS and Popper.js (Optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

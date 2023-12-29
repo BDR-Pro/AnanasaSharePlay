@@ -141,6 +141,14 @@ const ProfileEdit = () => {
               <Form.Label>Bio</Form.Label>
               <Form.Control as="textarea" rows={3} defaultValue={userInfo.bio} name="bio" />
             </Form.Group>
+            
+            <Form.Group controlId="formBasicRevenue">
+              <Form.Label>Revenue Visibility</Form.Label>
+              <Form.Control as="select" defaultValue={userInfo.isRevenuePrivate ? 'private' : 'public'} name="revenueVisibility">
+                <option value="private">Private</option>
+                <option value="public">Public</option>
+              </Form.Control>
+            </Form.Group>
 
             <Form.Group controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>

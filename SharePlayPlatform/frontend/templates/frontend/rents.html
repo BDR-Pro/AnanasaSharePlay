@@ -64,8 +64,7 @@
     </style>
 </head>
 
-<body>
-
+<body>   
     <div class="container mt-5">
         <h2>Your Rents</h2>
 
@@ -84,30 +83,43 @@
 
                         <p class="card-text">
                             {% if transaction.is_paid %}
-                                {% if transaction.isitToday %}
+                                {% if transaction.isitToday and transaction.isPlayable %}
+                                    <a href="{% url 'frontend:play' transaction.id %}" class="btn btn-primary">Play</a>
+                                {% else %}
+                                    <button class="btn btn-primary" disabled>Play</button>
                                     {% if transaction.isPlayable %}
-                                        <a href="{% url 'frontend:play' transaction.id %}">
-                                            <button class="btn btn-primary">Play</button>
-                                        </a>
-                                    {% else %}
-                                        <button class="btn btn-primary" disabled>Play</button>
                                         <p class="card-text">You can play this game in {{ transaction.start_hour|time:"H:i" }}.</p>
                                     {% endif %}
+                                {% endif %}
 
-                                    {% if transaction.isPlayed %}
-                                    <a href="{% url 'frontend:RateStreamer' transaction.id %}">
-                                        <button class="btn btn-primary">Rate Streamer</button>
-                                    </a>
-                                    {% else %}
-                                        <button class="btn btn-primary" disabled>Rate Streamer</button>
-                                        <p class="card-text">You can rate the streamer after you play the game.</p>
+                                {% if transaction.isPlayed %}
+                                    <a href="{% url 'frontend:RateStreamer' transaction.id %}" class="btn btn-primary">Rate Streamer</a>
+                                {% else %}
+                                    <button class="btn btn-primary" disabled>Rate Streamer</button>
+                                    {% if not transaction.isPlayable %}
+                                        <p class="alert alert-info" role="alert"
+                                        >You can rate the streamer after you play the game.</p>
                                     {% endif %}
-                                    {%endif%}
-                            {% else %}
-                                <a href="{% url 'frontend:pay' transaction.randomNumber %}" class="btn btn-primary">Pay</a>
-                                Not Paid
+                                {% endif %}
+                            {% elif transaction.notExpied %}
+                                {% if not transaction.is_paid %}
+                                    <a href="{% url 'frontend:pay' transaction.randomNumber %}" class="btn btn-primary">Pay</a>
+                                {% else %}
+                                    <p class="card-text">Paid</p>
+                                {% endif %}
                             {% endif %}
 
+                            {% if transaction.isExpired and not transaction.is_paid %}
+                                <button class="btn btn-primary" disabled>Pay</button>
+                                <p class="alert alert-info" role="alert">This rent has expired.</p>
+                            {% endif %}
+
+                            {% if transaction.isPlayed %}
+                                <p class="alert alert-success" role="alert">Played</p>  
+                            {% endif %}
+                            {% if transaction.isRated %}
+                                <p class="card-text">Rated</p>
+                            {% endif %}
                         </p>
                     </div>
                 </div>
