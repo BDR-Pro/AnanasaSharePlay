@@ -36,6 +36,9 @@ const App = () => {
                     />
                     <Card.Body className="text-center">
                       <Card.Title>{game.title}</Card.Title>
+                      <a href={`/game/genre/${game.genre}`}>
+                      <Card.Text className="genre">{game.genre}</Card.Text>
+                      </a>
                       <Card.Text className="description">{game.description}</Card.Text>
                     </Card.Body>
                   </Card>
