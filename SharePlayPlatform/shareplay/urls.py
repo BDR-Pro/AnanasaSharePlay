@@ -1,13 +1,14 @@
 # shareplay/urls.py
 
 from django.urls import path
-from .views import isFav, Games,addComment,getAvatar, Users, Transactions, Gameslist,ReviewCreate, Userslist, Transactionslist  ,GamesDetail, profile, updateProfile, add, ReviewsDetails
+from .views import isFav, Games,addComment,getAvatar,genres, Users, Transactions, Gameslist,ReviewCreate, Userslist, Transactionslist  ,GamesDetail, profile, updateProfile, add, ReviewsDetails
 app_name = 'shareplay'
 urlpatterns = [
     path('games/', Games.as_view(), name='Games'),
     path('users/', Users.as_view(), name='Users'),
     path('getProfile/<username>/', profile, name='Users'),
     path('invoice/', Transactions.as_view(), name='Transactions'),
+    path('genres/', genres, name='geners'),    
     path('gameslist/', Gameslist.as_view(), name='Gameslist'),
     path('userslist/', Userslist.as_view(), name='Userslist'),
     path('invoicelist/', Transactionslist.as_view(), name='Transactionslist'),

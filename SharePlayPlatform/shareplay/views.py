@@ -228,3 +228,6 @@ def getReviews(user):
         print(e)
         return {'reviews': []}
     
+def genres(request):
+    geners=Game.objects.values('genre').distinct()
+    return JsonResponse({'geners': list(geners)})

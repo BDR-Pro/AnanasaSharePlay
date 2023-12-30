@@ -8,6 +8,21 @@
 .alpackages/
 #Snapshots folder
 .snapshots/
+#python cache folder
+__pycache__/
+#Python virtual environment
+venv/
+#Python virtual environment
+env/
+#Python virtual environment
+ENV/
+#Python virtual environment
+env.bak/
+#python cache folder
+*.py[cod]
+*.pyc
+.pyc 
+
 #Testing Output folder
 .output/
 #Extension App-file
