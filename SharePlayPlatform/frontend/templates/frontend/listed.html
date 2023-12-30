@@ -2,73 +2,152 @@
 <html lang="en">
 <head>
     <!-- Your existing head content -->
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-img-top {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-title {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .card-text strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .transaction-details {
+            margin-top: 20px;
+            border-top: 1px solid #dee2e6;
+            padding-top: 10px;
+        }
+
+        .transaction-item {
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .btn-primary,
+        .btn-danger {
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: 1px solid #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border: 1px solid #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #bd2130;
+            border: 1px solid #bd2130;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center mb-5">Listed Games</h1>
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="text-center">
+            <h1 class="mb-5">Listed Games</h1>
 
-        {% if game_info_dict %}
-            <div class="row">
-                {% for game_id, game_info in game_info_dict.items %}
-                    <div class="col-lg-4 mb-4">
-                        <div class="card">
-                            <img src="{{ game_info.listing_game.game.image.url }}" alt="{{ game_info.listing_game.game.title }}" class="card-img-top">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ game_info.listing_game.game.title }}</h5>
-                                <p class="card-text">
-                                    <strong>Price per Hour:</strong> ${{ game_info.listing_game.price_per_hour }}<br>
-                                    <strong>Start Time:</strong> {{ game_info.listing_game.start }}<br>
-                                    <strong>End Time:</strong> {{ game_info.listing_game.end }}<br>
-                                    <strong>Starting Time:</strong> {{ game_info.listing_game.starting_time }}<br>
-                                    <strong>Ending Time:</strong> {{ game_info.listing_game.ending_time }}<br>
-                                </p>
+            {% if game_info_dict %}
+                <div class="row">
+                    {% for game_id, game_info in game_info_dict.items %}
+                        <div class="col-lg-4 mb-4">
+                            <div class="card">
+                                <img src="{{ game_info.listing_game.game.image.url }}" alt="{{ game_info.listing_game.game.title }}" class="card-img-top">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ game_info.listing_game.game.title }}</h5>
+                                    <p class="card-text">
+                                        <strong>Price per Hour:</strong> ${{ game_info.listing_game.price_per_hour }}<br>
+                                        <strong>Start Time:</strong> {{ game_info.listing_game.start }}<br>
+                                        <strong>End Time:</strong> {{ game_info.listing_game.end }}<br>
+                                        <strong>Starting Time:</strong> {{ game_info.listing_game.starting_time }}<br>
+                                        <strong>Ending Time:</strong> {{ game_info.listing_game.ending_time }}<br>
+                                    </p>
 
-                                {% if game_info.is_booked %}
-                                    <!-- Display transaction details if the game is booked -->
-                                    <div class="transaction-details">
-                                        <h6 class="card-subtitle mb-2 text-muted">Transaction Details:</h6>
-                                        {% for transaction in game_info.transactions %}
-                                            <div class="transaction-item">
-                                                <strong>Transaction ID:</strong> {{ transaction.id }}<br>
-                                                <strong>User:</strong> {{ transaction.user.username }}<br>
-                                                <strong>Rented User:</strong> {{ transaction.rented_user.username }}<br>
-                                                <strong>Day:</strong> {{ transaction.start_date }}<br>
-                                                <strong>Hour:</strong> {{ transaction.start_hour }}<br>
-                                                <strong>Until:</strong> {{ transaction.end_hour }}<br>
-                                                <strong>Revenue:</strong> ${{ transaction.revenue }}<br>
+                                    {% if game_info.is_booked %}
+                                        <!-- Display transaction details if the game is booked -->
+                                        <div class="transaction-details">
+                                            <h6 class="card-subtitle mb-2 text-muted">Transaction Details:</h6>
+                                            {% for transaction in game_info.transactions %}
+                                                <div class="transaction-item">
+                                                    <strong>Transaction ID:</strong> {{ transaction.id }}<br>
+                                                    <strong>User:</strong> {{ transaction.user.username }}<br>
+                                                    <strong>Rented User:</strong> {{ transaction.rented_user.username }}<br>
+                                                    <strong>Day:</strong> {{ transaction.start_date }}<br>
+                                                    <strong>Hour:</strong> {{ transaction.start_hour }}<br>
+                                                    <strong>Until:</strong> {{ transaction.end_hour }}<br>
+                                                    <strong>Revenue:</strong> ${{ transaction.revenue }}<br>
 
-                                                <!-- Form for sending a query with key ID -->
-                                                <form action="{% url 'frontend:set_up' trans_id=transaction.id %}" method="post">
-                                                    {% csrf_token %}
-                                                    <div class="form-group">
-                                                        <label for="query">Send Streaming link</label>
-                                                        <input type="text" class="form-control" name="session_id" id="query" placeholder="Enter session link" required>
-                                                    </div>
-                                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                                </form>
+                                                    <!-- Form for sending a query with key ID -->
+                                                    <form action="{% url 'frontend:set_up' trans_id=transaction.id %}" method="post">
+                                                        {% csrf_token %}
+                                                        <div class="form-group">
+                                                            <label for="query">Send Streaming link</label>
+                                                            <input type="text" class="form-control" name="session_id" id="query" placeholder="Enter session link" required>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                    </form>
 
-                                                <!-- Add more transaction details as needed -->
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                                                    <!-- Add more transaction details as needed -->
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
 
-                                {% if request.user != username %}
-                                    <p><strong>Owner:</strong> {{ username }}</p>
-                                    <p><strong>user:</strong> {{ request.user }}</p>
-                                    <a href="/rent-your-game/{{ game_info.listing_game.id }}" class="btn btn-primary">Book Now</a>
-                                {% endif %}
-                                {% if request.user == username %}
-                                    <a href="/delete-your-game/{{ game_info.listing_game.id }}" class="btn btn-danger">Delete Listing</a>
-                                {% endif %}
+                                    {% if request.user|lower != username|lower %}
+                                        <p><strong>Owner:</strong> {{ username|escapejs }}</p>
+                                        <p><strong>user:</strong> {{ request.user|escapejs }}</p>
+                                        <a href="/rent-your-game/{{ game_info.listing_game.id }}" class="btn btn-primary">Book Now</a>
+                                    {% endif %}
+                                    {% if request.user|lower == username|lower %}
+                                        <a href="/delete-your-game/{{ game_info.listing_game.id }}" class="btn btn-danger">Delete Listing</a>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-center">No games listed.</p>
-        {% endif %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No games listed.</p>
+            {% endif %}
+        </div>
     </div>
 
     <!-- Bootstrap JS and Popper.js (Optional) -->
