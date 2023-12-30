@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from shareplay.models import Game , UserProfile , Listing, Transaction , Reviews, RateStreamerModel
+from django.http import HttpResponse    
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from urllib.parse import unquote
@@ -247,7 +248,8 @@ def RentYourGame(request, id):
                 start_date=selected_start,
                 start_hour=start_hour,  
                 end_hour=end_hour,
-                revenue=revenue,      
+                revenue=revenue,
+                ListId = listed,
             )
             return redirect('/Profile/rents')
         else:
@@ -455,12 +457,34 @@ def play(request,Transid):
     return redirect(trans.session_id)
 
 
-def listed(request,username):
+def listed(request, username):
     today = datetime.now(timezone.utc).date()
     listing_games = Listing.objects.filter(end__gt=today, user__username=username).order_by('-start')
-    return render(request, 'frontend/listed.html',{"listing_games": listing_games})
+    # Create a dictionary to store information about each listed game
+    game_info_dict = {}
+
+    for listing_game in listing_games:
+        transactions = Transaction.objects.filter(ListId=listing_game,notExpied=True, is_paid=True)
+        game_info_dict[listing_game.id] = {
+            'listing_game': listing_game,
+            'is_booked': transactions.exists(),  # Check if there are any transactions for this game
+            'transactions': transactions,
+        }
+
+    return render(request, 'frontend/listed.html', {"game_info_dict": game_info_dict, "username": username})
 
 
+def set_up(request,trans_id):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            trans = get_object_or_404(Transaction,id=trans_id)
+            print(request.POST)
+            print(trans)
+            trans.session_id = request.POST.get('session_id')
+            print(trans)
+            return HttpResponse('success') 
+    else:
+        return redirect('/login')
 
     
 def DeleteYourGame(request,id):
@@ -492,3 +516,10 @@ def Statistic(request):
 
     # Render the template with the provided context
     return render(request, 'frontend/Statistic.html', context)
+
+
+def listing(request):
+    if request.user.is_authenticated:
+        return redirect(f'/Profile/listed/{request.user}')
+    else:
+        return redirect('/login')

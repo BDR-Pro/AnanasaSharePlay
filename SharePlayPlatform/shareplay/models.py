@@ -4,6 +4,8 @@ from django.contrib.postgres.fields import ArrayField
 from django.utils.text import slugify
 import datetime
 
+
+
 class Game(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, default=slugify(title))
@@ -16,6 +18,21 @@ class Game(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+class Listing(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    price_per_hour = models.DecimalField(max_digits=6, decimal_places=2)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+    starting_time = models.TimeField(blank=True, null=True, default='')
+    ending_time = models.TimeField(blank=True, null=True, default='')
+
+    
+    def __str__(self):
+        return f"{self.id}--{self.game.title} - {self.user.username} - {self.start} to {self.end} - {self.price_per_hour}"
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, default=1)
@@ -50,25 +67,13 @@ class Transaction(models.Model):
     notExpied= models.BooleanField(default=False)
     isRated = models.BooleanField(default=False)
     revenue= models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    ListId = models.ForeignKey(Listing,on_delete=models.DO_NOTHING, related_name='ListId', default=1)
     
     
     def __str__(self) -> str:
-        return f"{self.user.username} - {self.game.title} - {self.price_per_hour} - {self.start_date} - {self.start_hour} - {self.end_hour} - {self.is_paid}"
+        return f"{self.user.username} - {self.game.title} - {self.price_per_hour} - {self.start_date} - {self.start_hour} - {self.end_hour} - {self.is_paid} - {self.session_id}"
      
 
-
-class Listing(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    price_per_hour = models.DecimalField(max_digits=6, decimal_places=2)
-    start = models.DateTimeField()
-    end = models.DateTimeField()
-    starting_time = models.TimeField(blank=True, null=True, default='')
-    ending_time = models.TimeField(blank=True, null=True, default='')
-
-    
-    def __str__(self):
-        return f"{self.id}--{self.game.title} - {self.user.username} - {self.start} to {self.end} - {self.price_per_hour}"
 
 
 class Reviews(models.Model):

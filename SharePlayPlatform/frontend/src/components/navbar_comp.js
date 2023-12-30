@@ -83,10 +83,16 @@ function NavbarComponent() {
                     <NavDropdown.Item href="/Profile/rents">
                       My Rents
                     </NavDropdown.Item>
+
+                    <NavDropdown.Item href={`/Profile/listed`}>
+                      My Listed Games
+                    </NavDropdown.Item>
+
                     <NavDropdown.Divider />
                     <NavDropdown.Item href="/Statistic">
                       Statistic
                     </NavDropdown.Item>
+                    
                   </NavDropdown>
                 </Nav>
                 <Form className="d-flex" onSubmit={handleSearch}>
