@@ -46,6 +46,8 @@ def register_view(request):
             password = request.POST.get('password')
             avatar = request.FILES.get('avatar')
             nickname = request.POST.get('nickname')
+            header = request.FILES.get('header')
+            bio = request.POST.get('bio')
             
             # Validation
             if not all([email, password, avatar, nickname]):
@@ -57,7 +59,7 @@ def register_view(request):
                 return JsonResponse({'message': 'Username or email already exists'}, status=400)
 
             # Create UserProfile
-            UserProfile.objects.create(user=user,avatar=avatar, nickname=nickname)
+            UserProfile.objects.create(user=user,avatar=avatar, nickname=nickname , header=header , bio=bio)
 
             # Authenticate the user
             auth_user = authenticate(username=username, password=password)
@@ -103,3 +105,5 @@ def ProfileId(request,id):
 def getNameById(request,id):
     user=UserProfile.objects.get(user=AuthUser.objects.get(id=id))
     return JsonResponse({'nickname': user.nickname})
+
+

@@ -30,7 +30,7 @@ function SignUp() {
 
       // Registration successful
       setErrorMessage(null);
-      console.log('Registration successful!');
+      window.location.href = '/';
     } catch (error) {
       // Handle error
       setErrorMessage(error.message);
@@ -84,7 +84,7 @@ function SignUp() {
         </Form.Group>
 
         
-        <Form.Group controlId="formFile" className="mb-3">
+        <Form.Group controlId="Header" className="mb-3">
           <Form.Label>Header</Form.Label>
           <Form.Control type="file" name="header" />
         </Form.Group>

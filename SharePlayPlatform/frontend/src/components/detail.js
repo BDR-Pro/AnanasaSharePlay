@@ -212,9 +212,6 @@ const Detail = ({ context }) => {
               Streamers: {context.NumberOfStreamers}
             </Badge>
             <Badge variant="info">
-              Owners: {context.NumberOfOwners}
-            </Badge>
-            <Badge variant="info">
               Comments: {context.NumberOfComments}
             </Badge>
             

@@ -64,7 +64,7 @@ def profile(request,username):
     if request.user.is_authenticated and request.user.username == username:
        email=request.user.email
     else:
-       email=""
+       email="Email is private"
     user=AuthUser.objects.get(username=username)
     playedGames=Transaction.objects.filter(user=user,isPlayed=True).count()
     NumberOfListedGames=Listing.objects.filter(user=user).count()
@@ -108,9 +108,9 @@ def profile(request,username):
     print(recentlyPlayedGames)
     
     context = {'username': user.user.username, 'email': email,
-                         'nickname': user.nickname, 'avatar': user.avatar.url,
+                         'nickname': user.nickname, 'avatar': user.avatar_url,
                          'bio': user.bio,
-                         'header': user.header.url,"isCurrentUser":
+                         'header': user.header_url,"isCurrentUser":
                              request.user.is_authenticated and request.user.username == username,
                              "playedGames":playedGames,"NumberOfListedGames":NumberOfListedGames,"revenue":revenue,
                              "isRevenuePrivate":user.isRevenuePrivate,   
@@ -135,11 +135,15 @@ def updateProfile(request):
         user.avatar=request.FILES.get('avatar') if request.FILES.get('avatar') else user.avatar
         user.header=request.FILES.get('header') if request.FILES.get('header') else user.header
         user.isRevenuePrivate=True if request.POST.get('isRevenuePrivate')=="private" else user.isRevenuePrivate==False
+        print(user.isRevenuePrivate)
+        print(request.POST.get('isRevenuePrivate'))
+        print(request.POST)
         user.save()
         return JsonResponse({'username': user.user.username, 'email': user.user.email,
-                         'nickname': user.nickname, 'avatar': user.avatar.url,
+                         'nickname': user.nickname, 'avatar': user.avatar_url,
                          'bio': user.bio,
-                         'header': user.header.url,})
+                         'header': user.header_url,'isRevenuePrivate':user.isRevenuePrivate,
+                         'Gooooood': "success"})
     else:
         return JsonResponse({'status': "Use POST method"})
         
@@ -201,8 +205,8 @@ def addComment(request, game_slug):
 def getAvatar(request,id):
     user=AuthUser.objects.get(id=id)
     user=UserProfile.objects.get(user=user)
-    print(user.avatar.url)
-    return JsonResponse({'avatar': user.avatar.url})
+    print(user.avatar_url)
+    return JsonResponse({'avatar': user.avatar_url})
 
 def getReviews(user):
     try:
@@ -215,7 +219,7 @@ def getReviews(user):
                 'content': review.content,
                 'rating': review.rating,
                 'user': review.user.username,
-                'user_avatar': review.user.userprofile.avatar.url,
+                'user_avatar': review.user.userprofile.avatar_url,
                 'game_slug': review.game.slug,
                 'user_nickname': review.user.userprofile.nickname,
                 'game_title': review.game.title,

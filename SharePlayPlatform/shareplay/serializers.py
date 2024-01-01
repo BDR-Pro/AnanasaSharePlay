@@ -12,6 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = '__all__'
+        
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:

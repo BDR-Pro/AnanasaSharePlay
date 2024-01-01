@@ -25,5 +25,6 @@ urlpatterns = [
     path('Profile',Profile),
     path('NewInvoice',check_invoice_payment_status,name='NewInvoice'),
     path('RateStreamer/<Transid>',RateStreamer,name='RateStreamer'),
-    path('play/<Transid>/', play, name='play')
+    path('play/<Transid>/', play, name='play'),
+
 ]

@@ -8,7 +8,7 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('<username>',profile, name='profile_view'),
     path('getNameById/<id>',getNameById, name='profile_view'),
-    path('comment/<id>',ProfileId, name='profile_view')
+    path('comment/<id>',ProfileId, name='profile_view'),
 
     
 ]

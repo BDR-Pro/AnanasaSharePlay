@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.utils.text import slugify
 import datetime
+from urllib.parse import urljoin
 
 
 
@@ -12,7 +13,6 @@ class Game(models.Model):
     genre = models.CharField(max_length=255, blank=True, null=True, default='')
     description = models.TextField()
     image = models.ImageField(upload_to='images/')
-    owners = models.ManyToManyField(User, blank=True, related_name='owners', default=5)
     updated_at = models.DateTimeField(auto_now=True)
     views = models.IntegerField(default=0)
 
@@ -47,6 +47,34 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    @property
+    def avatar_url(self):
+        if self.avatar and hasattr(self.avatar, 'url'):
+            # If the avatar field is an absolute URL, return it as is
+            if self.avatar.url.__contains__('com'):
+                remove_media_http = self.avatar.url.replace('/media/https%3A/', '')
+                return remove_media_http
+
+            # If the avatar field is a relative path, join it with the base URL
+            base_url = ''  # Change this to your actual base URL
+            return urljoin(base_url, self.avatar.url)
+
+        return '/media/avatar/default.png'  # Provide a default if avatar is not set
+
+    @property
+    def header_url(self):
+        if self.header and hasattr(self.header, 'url'):
+            if self.header.url.__contains__('com'):
+                remove_media_http = self.avatar.url.replace('/media/https%3A/', '')
+                return remove_media_http
+
+            # If the header field is a relative path, join it with the base URL
+            base_url = ''  # Change this to your actual base URL
+            return urljoin(base_url, self.header.url)
+
+        return '/media/header/default.png'  # Provide a default if header is not set
+    
     
 import random
 class Transaction(models.Model):

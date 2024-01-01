@@ -8,11 +8,18 @@ from django.db.models import Avg
 from datetime import datetime, timezone
 from django.db.models import Sum, F, ExpressionWrapper, fields
 from datetime import date
-
+import json
+from django.contrib.auth.models import User as AuthUser
+from django.contrib.auth import authenticate, login, logout
 from django.db.models import Avg
 from django.core.exceptions import PermissionDenied
 from django.utils.timezone import make_aware
 from django.utils import timezone
+from django.http import HttpResponse
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.db.models import Avg, Sum
+
 from datetime import datetime
 from django.conf import settings
 import stripe
@@ -47,7 +54,6 @@ def detail(request,slug):
         NumberOfRenters=Transaction.objects.filter(game=game).count()
         NumberOfFavorites=UserProfile.objects.filter(games=game).count()
         NumberOfStreamers=Listing.objects.filter(game=game).count()
-        NumberOfOwners=game.owners.count()
         game.views += 1
         views=game.views
         NumberOfComments=Reviews.objects.filter(game=game).count()
@@ -59,7 +65,6 @@ def detail(request,slug):
             "NumberOfRenters": NumberOfRenters,
             "NumberOfFavorites": NumberOfFavorites,
             "NumberOfStreamers": NumberOfStreamers,
-            "NumberOfOwners": NumberOfOwners,
             "NumberOfComments": NumberOfComments,
             "AvgRating": AvgRating,
             
@@ -523,3 +528,5 @@ def listing(request):
         return redirect(f'/Profile/listed/{request.user}')
     else:
         return redirect('/login')
+    
+    
