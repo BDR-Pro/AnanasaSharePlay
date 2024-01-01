@@ -147,6 +147,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 MEDIA_URL = '/media/'
+TIME_ZONE = 'UTC'
+USE_TZ = True
 MEDIA_ROOT = BASE_DIR / "media"
 
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']

@@ -165,16 +165,11 @@ def renting(request, slug):
             
             '''
 
-            
-            current_date = datetime.now(timezone.utc).date()
+            print("hhhhhhhhhhh")
             start_hour = request.POST['starting_hour']
             end_hour = request.POST['ending_hour']
-            # Construct start and end datetime objects using the current date and selected hours
-            start_datetime = timezone.make_aware(datetime.combine(current_date, datetime.strptime(start_hour, '%H:%M').time()))
-            end_datetime = timezone.make_aware(datetime.combine(current_date, datetime.strptime(end_hour, '%H:%M').time()))
-            print(start_datetime)
-            print(end_datetime)
-            
+            start_datetime = datetime.strptime(request.POST['start'], "%Y-%m-%d")
+            end_datetime = datetime.strptime(request.POST['end'], "%Y-%m-%d")
             # Create the Listing object
             listed = Listing.objects.create(
                 user=request.user,
