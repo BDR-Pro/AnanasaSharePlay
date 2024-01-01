@@ -213,8 +213,10 @@ def RentYourGame(request, id):
             streamer = get_object_or_404(UserProfile, user=listed.user)
             game = get_object_or_404(Game, id=listed.game.id)
             avgPrice = Listing.objects.filter(game=game).aggregate(Avg('price_per_hour'))['price_per_hour__avg']
+            trans=Transaction.objects.filter(ListId=listed,notExpied=True, is_paid=True)
             return render(request, 'frontend/rent-your-game.html', {"listed": listed, "streamer": streamer, "game": game,
-                                                                "avgPrice": avgPrice})
+                                                                "avgPrice": avgPrice,
+                                                                "trans":trans})
 
         if request.method == 'POST':
             listed = get_object_or_404(Listing, id=id)

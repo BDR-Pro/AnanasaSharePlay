@@ -108,6 +108,9 @@
                 <h5 class="card-title">Listing Details</h5>
                 <p class="card-text">Price per hour: ${{ listed.price_per_hour }}  Average price ${{ avgPrice }}</p>
                 <span class="card-text">Available from: </span>{{listed.start}} to {{listed.end}}</p>
+                {% if trans %}
+                <p class="card-text">Already Booked time: {{ trans.start_date }}  : {{ trans.start_hour }} to {{ trans.end_hour }}</p>
+                {% endif %}
                 <!-- Add more details as needed -->
             </div>
         </div>
