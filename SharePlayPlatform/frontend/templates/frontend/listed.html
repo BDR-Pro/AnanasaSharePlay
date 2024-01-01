@@ -3,6 +3,9 @@
 <head>
     <!-- Your existing head content -->
 
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <style>
         body {
             background-color: #f8f9fa;
@@ -13,6 +16,7 @@
             margin-top: 50px;
         }
 
+        /* Bootstrap Card Styles */
         .card {
             border: 1px solid #dee2e6;
             border-radius: 8px;
@@ -21,9 +25,10 @@
         }
 
         .card-img-top {
+            border-top-left-radius: calc(0.375rem - 1px);
+            border-top-right-radius: calc(0.375rem - 1px);
             max-width: 100%;
             height: auto;
-            border-radius: 8px 8px 0 0;
         }
 
         .card-body {
@@ -81,7 +86,7 @@
     </style>
 </head>
 <body>
-    <div class="container d-flex align-items-center justify-content-center">
+    <div class="container">
         <div class="text-center">
             <h1 class="mb-5">Listed Games</h1>
 
@@ -95,14 +100,13 @@
                                     <h5 class="card-title">{{ game_info.listing_game.game.title }}</h5>
                                     <p class="card-text">
                                         <strong>Price per Hour:</strong> ${{ game_info.listing_game.price_per_hour }}<br>
-                                        <strong>Start Time:</strong> {{ game_info.listing_game.start }}<br>
-                                        <strong>End Time:</strong> {{ game_info.listing_game.end }}<br>
+                                        <strong>Start Time:</strong> {{ game_info.listing_game.start |date:'Y-m-d'  }}<br>
+                                        <strong>End Time:</strong> {{ game_info.listing_game.end |date:'Y-m-d'  }}<br>
                                         <strong>Starting Time:</strong> {{ game_info.listing_game.starting_time }}<br>
                                         <strong>Ending Time:</strong> {{ game_info.listing_game.ending_time }}<br>
                                     </p>
 
                                     {% if game_info.is_booked %}
-                                        <!-- Display transaction details if the game is booked -->
                                         <div class="transaction-details">
                                             <h6 class="card-subtitle mb-2 text-muted">Transaction Details:</h6>
                                             {% for transaction in game_info.transactions %}
@@ -110,12 +114,11 @@
                                                     <strong>Transaction ID:</strong> {{ transaction.id }}<br>
                                                     <strong>User:</strong> {{ transaction.user.username }}<br>
                                                     <strong>Rented User:</strong> {{ transaction.rented_user.username }}<br>
-                                                    <strong>Day:</strong> {{ transaction.start_date }}<br>
+                                                    <strong>Day:</strong> {{ transaction.start_date |date:'Y-m-d'  }}<br>
                                                     <strong>Hour:</strong> {{ transaction.start_hour }}<br>
                                                     <strong>Until:</strong> {{ transaction.end_hour }}<br>
                                                     <strong>Revenue:</strong> ${{ transaction.revenue }}<br>
 
-                                                    <!-- Form for sending a query with key ID -->
                                                     <form action="{% url 'frontend:set_up' trans_id=transaction.id %}" method="post">
                                                         {% csrf_token %}
                                                         <div class="form-group">
@@ -124,8 +127,6 @@
                                                         </div>
                                                         <button type="submit" class="btn btn-primary">Submit</button>
                                                     </form>
-
-                                                    <!-- Add more transaction details as needed -->
                                                 </div>
                                             {% endfor %}
                                         </div>
@@ -133,7 +134,7 @@
 
                                     {% if request.user|lower != username|lower %}
                                         <p><strong>Owner:</strong> {{ username|escapejs }}</p>
-                                        <p><strong>user:</strong> {{ request.user|escapejs }}</p>
+                                        <p><strong>User:</strong> {{ request.user|escapejs }}</p>
                                         <a href="/rent-your-game/{{ game_info.listing_game.id }}" class="btn btn-primary">Book Now</a>
                                     {% endif %}
                                     {% if request.user|lower == username|lower %}
