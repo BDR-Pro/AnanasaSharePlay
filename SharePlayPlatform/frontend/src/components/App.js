@@ -1,4 +1,4 @@
-//app.js
+// app.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
@@ -23,11 +23,11 @@ const App = () => {
       <Switch>
         {/* Route for the game list */}
         <Route exact path="/">
-          <Row xs={2} md={2} className="g-4">
+          <Row xs={1} md={2} lg={3} className="g-4">
             {games.map((game) => (
               <Col key={game.id}>
-                <a href={`/game/${game.slug}`}>
-                  <Card>
+                <a href={`/game/${game.slug}`} className="text-decoration-none">
+                  <Card className="mb-3">
                     <Card.Img
                       variant="top"
                       src={game.image}
@@ -36,8 +36,8 @@ const App = () => {
                     />
                     <Card.Body className="text-center">
                       <Card.Title>{game.title}</Card.Title>
-                      <a href={`/game/genre/${game.genre}`}>
-                      <Card.Text className="genre">{game.genre}</Card.Text>
+                      <a href={`/game/genre/${game.genre}`} className="text-decoration-none">
+                        <Card.Text className="genre">{game.genre}</Card.Text>
                       </a>
                       <Card.Text className="description">{game.description}</Card.Text>
                     </Card.Body>
@@ -56,9 +56,6 @@ const App = () => {
     </Router>
   );
 };
-
-export default App;
-
 
 const appDiv = document.getElementById('app');
 render(<App />, appDiv);
