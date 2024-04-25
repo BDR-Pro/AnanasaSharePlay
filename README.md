@@ -100,6 +100,15 @@ List any software or dependencies that need to be installed.
 <img src="https://github.com/BDR-Pro/AnanasaSharePlay/assets/91114465/f3a5168d-44f4-44f9-97c1-17c67dd3a4ec" alt="UML" width="720"/>
 </a>
 
+
+## Diagram 
+
+![share_play](https://github.com/BDR-Pro/AnanasaSharePlay/assets/91114465/ba2c0b77-da13-44f5-a2c6-4931678e5462)
+
+
+---
+
+
   
 ## Contributing
 
