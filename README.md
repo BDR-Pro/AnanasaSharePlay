@@ -1,4 +1,4 @@
-# AnanasaSharePlay
+# StreamMyGame
 
 Website to share play for games with customers.
 
